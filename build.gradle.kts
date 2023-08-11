@@ -29,12 +29,15 @@ dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 //    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("junit:junit:4.13.1")
 
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
+    testRuntimeOnly("com.h2database:h2")
 
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.6.3")
 //    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 //    testImplementation("org.springframework.security:spring-security-test")
 }

@@ -8,10 +8,12 @@ import com.onebyte.life4cut.common.vo.UrlPathConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 public class Sample extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
