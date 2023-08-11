@@ -29,4 +29,12 @@ public class Sample extends BaseEntity {
     @Column
     private LocalDateTime deletedAt;
 
+
+    public static Sample create(String nickname, Email email) {
+        Sample sample = new Sample();
+        sample.nickname = nickname;
+        sample.email = email;
+        return sample;
+    }
+
 }

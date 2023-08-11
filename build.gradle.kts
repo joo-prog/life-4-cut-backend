@@ -30,6 +30,7 @@ dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("junit:junit:4.13.1")
+    testImplementation("org.testng:testng:7.1.0")
 
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
