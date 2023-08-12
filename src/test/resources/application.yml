@@ -2,8 +2,8 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
-        #        show_sql: false
+        #        show_sql: true
+        show_sql: false
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
@@ -14,5 +14,5 @@ logging:
       hibernate:
         orm:
           jdbc:
-            bind: TRACE
-#            bind: false
+            #            bind: TRACE
+            bind: false
