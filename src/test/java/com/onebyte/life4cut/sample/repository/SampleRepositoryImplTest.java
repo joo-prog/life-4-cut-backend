@@ -67,11 +67,8 @@ class SampleRepositoryImplTest {
     void search() {
         // given
         Sample sample = sampleFixtureFactory.save((entity, builder) -> {
-            builder.setNull("id");
             builder.set("email", Email.of("test@gmail.com"));
             builder.set("nickname", "nickname");
-            builder.setNull("createdAt");
-            builder.setNull("updatedAt");
         });
 
         // when

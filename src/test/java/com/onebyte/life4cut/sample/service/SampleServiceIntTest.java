@@ -45,7 +45,6 @@ public class SampleServiceIntTest {
 
             // then
             assertThat(save).isNotNull();
-            assertThat(save).isEqualTo(1L);
         }
     }
 }

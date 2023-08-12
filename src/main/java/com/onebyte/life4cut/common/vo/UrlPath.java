@@ -10,10 +10,10 @@ public class UrlPath {
 
     private String value;
 
-    protected UrlPath() {
+    private UrlPath() {
     }
 
-    UrlPath(String value) {
+    protected UrlPath(String value) {
         this.value = value;
     }
 

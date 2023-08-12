@@ -18,7 +18,7 @@ class SampleServiceTest {
 
     private final SampleService sampleService = new SampleService(sampleRepository);
 
-    private final SampleFixtureFactoryFactory sampleFixtureFactory = new SampleFixtureFactoryFactory(null);
+    private final SampleFixtureFactoryFactory sampleFixtureFactory = new SampleFixtureFactoryFactory();
 
 
     @Nested

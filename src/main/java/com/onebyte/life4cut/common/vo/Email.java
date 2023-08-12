@@ -18,7 +18,7 @@ public class Email {
 
     private String value;
 
-    protected Email() {
+    private Email() {
     }
 
     protected Email(String value) {
