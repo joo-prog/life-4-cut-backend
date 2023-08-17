@@ -24,6 +24,7 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 
+val querydslDir = "src/main/generated"
 val asciidoctorExt: Configuration by configurations.creating
 
 dependencies {
@@ -51,11 +52,14 @@ dependencies {
 //    testImplementation("org.springframework.security:spring-security-test")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+
+sourceSets {
+    getByName("main").java.srcDirs(querydslDir)
 }
 
-
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
 
 tasks {
     val snippetsDir = file("${buildDir}/generated-snippets")
@@ -63,6 +67,12 @@ tasks {
     test {
         outputs.dir(snippetsDir)
         useJUnitPlatform()
+    }
+
+    clean {
+        doLast {
+            file(querydslDir).deleteRecursively()
+        }
     }
 
     asciidoctor {
