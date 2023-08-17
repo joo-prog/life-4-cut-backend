@@ -80,4 +80,21 @@ tasks {
         inputs.dir(snippetsDir)
         dependsOn(test)
     }
+
+    bootJar {
+        dependsOn(asciidoctor)
+        from ("build/docs/asciidoc") {
+            into("static/docs")
+        }
+    }
+
+    register<Copy>("copyAsciidoctor") {
+        dependsOn(asciidoctor)
+        from(file("$buildDir/docs/asciidoc"))
+        into(file("src/main/resources/static/docs"))
+    }
+
+    build {
+        dependsOn("copyAsciidoctor")
+    }
 }
