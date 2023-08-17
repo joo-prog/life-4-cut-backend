@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(CustomException.class)
+  public ResponseEntity<CustomErrorResponse> handleRuntimeError(final CustomException e) {
+    log.error("Custom Exception");
+    return makeResponseEntity(e.getName(), e.getMessage(), e.getStatus());
+  }
+
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<CustomErrorResponse> handleRuntimeError(final RuntimeException e) {
     log.error("Uncontrolled Exception ", e);
