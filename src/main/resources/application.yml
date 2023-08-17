@@ -1,0 +1,41 @@
+spring:
+  profiles:
+    default: 'local'
+    group:
+      local: 'common,local-db'
+      dev: 'common'
+      prod: 'common'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'common'
+  jpa:
+    database-platform: 'org.hibernate.dialect.MySQLDialect'
+    database: MYSQL
+    hibernate:
+      ddl-auto: none
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'local-db'
+  datasource:
+    url: "jdbc:mysql://localhost:3325/life-4-cut-development"
+    username: "test"
+    password: "test"
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 3000
+      read-only: false
+      pool-name: HikariCP
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+
