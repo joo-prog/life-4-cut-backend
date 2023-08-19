@@ -3,6 +3,7 @@ plugins {
     id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.2"
     id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("jacoco")
 }
 
 group = "com.onebyte"
@@ -24,6 +25,7 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 
+val querydslDir = "src/main/generated"
 val asciidoctorExt: Configuration by configurations.creating
 
 dependencies {
@@ -51,23 +53,84 @@ dependencies {
 //    testImplementation("org.springframework.security:spring-security-test")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+
+sourceSets {
+    getByName("main").java.srcDirs(querydslDir)
 }
 
-
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
 
 tasks {
+    /**
+     * QueryDSL
+     */
     val snippetsDir = file("${buildDir}/generated-snippets")
 
     test {
         outputs.dir(snippetsDir)
         useJUnitPlatform()
+        finalizedBy(jacocoTestReport)
     }
 
+    clean {
+        doLast {
+            file(querydslDir).deleteRecursively()
+        }
+    }
+
+    /**
+     * REST Docs & Asciidoc
+     */
     asciidoctor {
         configurations(asciidoctorExt.name)
         inputs.dir(snippetsDir)
         dependsOn(test)
     }
+
+    bootJar {
+        dependsOn(asciidoctor)
+        from ("build/docs/asciidoc") {
+            into("static/docs")
+        }
+    }
+
+    register<Copy>("copyAsciidoctor") {
+        dependsOn(asciidoctor)
+        from(file("$buildDir/docs/asciidoc"))
+        into(file("src/main/resources/static/docs"))
+    }
+
+    build {
+        dependsOn("copyAsciidoctor")
+    }
+
+    /**
+     * Jacoco
+     */
+    jacocoTestReport {
+        dependsOn(test)
+    }
+
+//    jacocoTestCoverageVerification {
+//        violationRules {
+//            rule {
+//                enabled = true
+//
+//                element = "CLASS"
+//
+//                limit {
+//                    counter = "BRANCH"
+//                    value = "COVEREDRATIO"
+//                    minimum = "0.80".toBigDecimal()
+//                }
+//
+//                // 커버리지 체크 제외 클래스 지정
+//                excludes = listOf(
+//                    "*.Config.*",
+//                )
+//            }
+//        }
+//    }
 }
