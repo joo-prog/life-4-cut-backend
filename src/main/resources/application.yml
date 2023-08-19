@@ -2,7 +2,7 @@ spring:
   profiles:
     default: 'local'
     group:
-      local: 'common,local-db'
+      local: 'common,local'
       dev: 'common'
       prod: 'common'
 
@@ -19,9 +19,27 @@ spring:
 
 ---
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao-login:
+            client-id: 7e558adbc7b32496ba547bfbbaa19261
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            authorization-grant-type: authorization_code
+            client-name: Kakao
+            scope:
+              - account_email
+        provider:
+          kakao-login:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
   config:
     activate:
-      on-profile: 'local-db'
+      on-profile: 'local'
   datasource:
     url: "jdbc:mysql://localhost:3325/life-4-cut-development"
     username: "test"
