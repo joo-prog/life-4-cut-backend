@@ -10,7 +10,6 @@ public enum ExceptionMessage {
   BAD_REQUEST("Bad Request"),
   SAMPLE_NOT_FOUND("Sample Not Found"),
 
-  RUNTIME_ERROR("Runtime Error"),
   INTERNAL_SERVER_ERROR("Internal Server Error"),
   FORBIDDEN("Forbidden")
   ;

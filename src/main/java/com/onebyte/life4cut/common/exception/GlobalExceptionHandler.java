@@ -16,12 +16,6 @@ public class GlobalExceptionHandler {
     return makeResponseEntity(e.getName(), e.getMessage(), e.getStatus());
   }
 
-  @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<CustomErrorResponse> handleRuntimeError(final RuntimeException e) {
-    log.error("Uncontrolled Exception ", e);
-    return makeResponseEntity(ExceptionName.RUNTIME_ERROR.getName(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
   @ExceptionHandler(Exception.class)
   public ResponseEntity<CustomErrorResponse> handleInternalServerError(final RuntimeException e) {
     log.error("Uncontrolled Exception ", e);
