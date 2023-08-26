@@ -13,3 +13,11 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_general_ci
+
+  life-4-cut-redis-development:
+    platform: linux/amd64
+    container_name: life-4-cut-redis-development
+    image: 'redis:7.2.0'
+    ports:
+      - '6380:6379'
+    command: redis-server --requirepass test

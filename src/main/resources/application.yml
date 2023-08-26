@@ -19,6 +19,9 @@ spring:
 
 ---
 spring:
+  config:
+    activate:
+      on-profile: 'local'
   security:
     oauth2:
       client:
@@ -36,10 +39,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
-
-  config:
-    activate:
-      on-profile: 'local'
   datasource:
     url: "jdbc:mysql://localhost:3325/life-4-cut-development"
     username: "test"
@@ -49,7 +48,11 @@ spring:
       connection-timeout: 3000
       read-only: false
       pool-name: HikariCP
-
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      password: test
   jpa:
     hibernate:
       ddl-auto: update
