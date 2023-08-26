@@ -23,7 +23,7 @@ public class SecurityConfiguration {
                 )
                 .oauth2Login((oauth2) -> oauth2
                         // 로그인 성공시 이동할 페이지
-                        .defaultSuccessUrl("https://www.naver.com", true)
+                        .defaultSuccessUrl("/oauth-success", true)
                 )
                 .build();
     }
