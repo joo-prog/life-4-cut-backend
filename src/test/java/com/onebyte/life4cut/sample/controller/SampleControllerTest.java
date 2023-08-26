@@ -2,6 +2,7 @@ package com.onebyte.life4cut.sample.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onebyte.life4cut.config.TestSecurityConfiguration;
 import com.onebyte.life4cut.sample.controller.dto.SampleCreateRequest;
 import com.onebyte.life4cut.sample.service.SampleService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -32,8 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureRestDocs
-@WebMvcTest(value = {SampleController.class})
-@ExtendWith({MockitoExtension.class, RestDocumentationExtension.class})
+@WebMvcTest(SampleController.class)
+@ExtendWith({MockitoExtension.class, RestDocumentationExtension.class, SpringExtension.class})
+@ImportAutoConfiguration(TestSecurityConfiguration.class)
 class SampleControllerTest {
     @MockBean
     private SampleService sampleService;
@@ -42,7 +46,6 @@ class SampleControllerTest {
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
 
     @Nested
     class Create {
@@ -55,8 +58,7 @@ class SampleControllerTest {
             when(sampleService.save(any(), any())).thenReturn(100L);
 
             // when
-            ResultActions result = mockMvc.perform(
-                    post("/api/v1/samples")
+            ResultActions result = mockMvc.perform(post("/api/v1/samples")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request))
             );

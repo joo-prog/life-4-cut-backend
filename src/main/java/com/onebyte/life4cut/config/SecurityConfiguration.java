@@ -26,6 +26,7 @@ public class SecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/v1/samples").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login((oauth2) -> oauth2
