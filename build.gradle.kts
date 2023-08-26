@@ -34,7 +34,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    
+
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.session:spring-session-data-redis")
 
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
@@ -53,7 +55,6 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 }
 
-
 sourceSets {
     getByName("main").java.srcDirs(querydslDir)
 }
@@ -66,7 +67,7 @@ tasks {
     /**
      * QueryDSL
      */
-    val snippetsDir = file("${buildDir}/generated-snippets")
+    val snippetsDir = file("$buildDir/generated-snippets")
 
     test {
         outputs.dir(snippetsDir)
@@ -91,7 +92,7 @@ tasks {
 
     bootJar {
         dependsOn(asciidoctor)
-        from ("build/docs/asciidoc") {
+        from("build/docs/asciidoc") {
             into("static/docs")
         }
     }
