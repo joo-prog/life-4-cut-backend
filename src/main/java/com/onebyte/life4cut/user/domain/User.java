@@ -38,10 +38,10 @@ public class User extends BaseEntity {
 
   private String email;
 
-  @Column(length = 30)
+  @Column(name = "oauth_type", length = 30)
   private String oauthType;
 
-  @Column(length = 30)
+  @Column(name = "oauth_id", length = 30)
   private String oauthId;
 
   private LocalDateTime deletedAt;
