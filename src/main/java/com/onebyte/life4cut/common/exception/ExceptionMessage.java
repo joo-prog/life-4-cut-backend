@@ -9,6 +9,7 @@ public enum ExceptionMessage {
 
   BAD_REQUEST("Bad Request"),
   SAMPLE_NOT_FOUND("Sample Not Found"),
+  USER_NOT_FOUND("User Not Found"),
 
   INTERNAL_SERVER_ERROR("Internal Server Error"),
   FORBIDDEN("Forbidden")
