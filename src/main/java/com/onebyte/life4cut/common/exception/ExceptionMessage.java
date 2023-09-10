@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ExceptionMessage {
 
   BAD_REQUEST("Bad Request"),
+  NOT_SUPPORT_OAUTH_TYPE("지원하지 않는 OAuth Type 입니다."),
   SAMPLE_NOT_FOUND("Sample Not Found"),
   USER_NOT_FOUND("User Not Found"),
 
