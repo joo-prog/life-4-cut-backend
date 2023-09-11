@@ -1,5 +1,8 @@
 package com.onebyte.life4cut.user.repository;
 
+import static com.onebyte.life4cut.user.domain.QUser.user;
+
+import com.onebyte.life4cut.auth.dto.OAuthInfo;
 import com.onebyte.life4cut.user.domain.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -8,7 +11,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
 
   private final EntityManager em;
   private final JPAQueryFactory query;
@@ -26,4 +29,17 @@ public class UserRepositoryImpl implements UserRepository{
         .getResultList();
     return userList.stream().findAny();
   }
+
+  @Override
+  public List<User> findUserByOAuthInfo(OAuthInfo oAuthInfo) {
+    return query.select(user)
+        .from(user)
+        .where(
+            user.oauthId.eq(oAuthInfo.getOauthId()),
+            user.oauthType.eq(oAuthInfo.getOauthType().getType())
+        )
+        .fetch();
+  }
+
+
 }
