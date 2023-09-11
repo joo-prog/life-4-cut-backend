@@ -9,6 +9,7 @@ public enum ExceptionMessage {
 
   BAD_REQUEST("Bad Request"),
   NOT_SUPPORT_OAUTH_TYPE("지원하지 않는 OAuth Type 입니다."),
+  USER_NOT_UNIQUE("OAuthInfo로 찾은 유저가 고유하지 않습니다."),
   SAMPLE_NOT_FOUND("Sample Not Found"),
   USER_NOT_FOUND("User Not Found"),
 
