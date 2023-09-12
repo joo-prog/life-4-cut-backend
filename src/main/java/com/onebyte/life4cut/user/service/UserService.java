@@ -2,6 +2,7 @@ package com.onebyte.life4cut.user.service;
 
 import com.onebyte.life4cut.auth.dto.OAuthInfo;
 import com.onebyte.life4cut.user.domain.User;
+import com.onebyte.life4cut.user.dto.UserSignInRequest;
 import com.onebyte.life4cut.user.exception.UserNotFound;
 import com.onebyte.life4cut.user.exception.UserNotUnique;
 import com.onebyte.life4cut.user.repository.UserRepository;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private final UserRepository userRepository;
+
+  public long save(UserSignInRequest request) {
+    return userRepository.save(request.toEntity());
+  }
 
   public User findUser(int id) {
     User user = userRepository.findUser(id)
