@@ -1,6 +1,9 @@
 package com.onebyte.life4cut.support.fileUpload;
 
+import jakarta.annotation.Nonnull;
+
 public interface FileUploader {
 
-    public FileUploadResponse upload(FileUploadRequest fileUploadRequest);
+    @Nonnull
+    FileUploadResponse upload(@Nonnull FileUploadRequest fileUploadRequest);
 }

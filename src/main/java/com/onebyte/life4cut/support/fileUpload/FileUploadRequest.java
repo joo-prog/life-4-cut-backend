@@ -8,7 +8,7 @@ public interface FileUploadRequest {
 
     String getFileName();
 
-    String getPath();
-
     String getContentType();
+
+    long getContentLength();
 }
