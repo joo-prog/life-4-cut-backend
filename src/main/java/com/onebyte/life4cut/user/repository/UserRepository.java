@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-  long save(User user);
+  User save(User user);
 
-  Optional<User> findUser(int id);
+  Optional<User> findUser(long id);
 
   List<User> findUserByOAuthInfo(OAuthInfo oAuthInfo);
 }

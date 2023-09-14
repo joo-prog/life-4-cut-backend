@@ -17,11 +17,11 @@ public class UserService {
 
   private final UserRepository userRepository;
 
-  public long save(UserSignInRequest request) {
+  public User save(UserSignInRequest request) {
     return userRepository.save(request.toEntity());
   }
 
-  public User findUser(int id) {
+  public User findUser(long id) {
     User user = userRepository.findUser(id)
         .orElseThrow(UserNotFound::new);
     return user;
