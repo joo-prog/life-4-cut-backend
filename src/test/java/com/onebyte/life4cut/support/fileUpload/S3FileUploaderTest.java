@@ -1,6 +1,5 @@
 package com.onebyte.life4cut.support.fileUpload;
 
-import com.onebyte.life4cut.support.fileUpload.config.S3Env;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +48,7 @@ class S3FileUploaderTest {
 
         s3Client.createBucket(builder -> builder.bucket("test-bucket"));
 
-        s3FileUploader = new S3FileUploader(s3Client, new S3Env("test-bucket", localStackContainer.getRegion()));
+        s3FileUploader = new S3FileUploader(s3Client);
     }
 
     @Test
@@ -101,6 +100,11 @@ class S3FileUploaderTest {
         @Override
         public long getContentLength() {
             return multipartFile.getSize();
+        }
+
+        @Override
+        public String getBucket() {
+            return "test-bucket";
         }
     }
 

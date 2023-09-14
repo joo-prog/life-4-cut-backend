@@ -103,9 +103,7 @@ auth:
     refresh-expires: 24
 
 aws:
-  s3:
-    region: ap-northeast-2
-    bucket: life-4-cut-development
+  region: ap-northeast-2
 
 #logging:
 #  level:

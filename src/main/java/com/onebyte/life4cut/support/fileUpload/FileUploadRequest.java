@@ -4,6 +4,8 @@ import java.io.InputStream;
 
 public interface FileUploadRequest {
 
+    String getBucket();
+
     InputStream getInputStream();
 
     String getFileName();

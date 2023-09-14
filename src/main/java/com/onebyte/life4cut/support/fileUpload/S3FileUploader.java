@@ -1,6 +1,5 @@
 package com.onebyte.life4cut.support.fileUpload;
 
-import com.onebyte.life4cut.support.fileUpload.config.S3Env;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -12,11 +11,8 @@ class S3FileUploader implements FileUploader {
 
     private final S3Client s3Client;
 
-    private final S3Env s3Env;
-
-    public S3FileUploader(S3Client s3Client, S3Env s3Env) {
+    public S3FileUploader(S3Client s3Client) {
         this.s3Client = s3Client;
-        this.s3Env = s3Env;
     }
 
     @Nonnull
@@ -24,7 +20,7 @@ class S3FileUploader implements FileUploader {
     public FileUploadResponse upload(@Nonnull FileUploadRequest fileUploadRequest) {
         s3Client.putObject(
                 PutObjectRequest.builder()
-                        .bucket(s3Env.bucket())
+                        .bucket(fileUploadRequest.getBucket())
                         .key(fileUploadRequest.getFileName())
                         .contentType(fileUploadRequest.getContentType())
                         .contentLength(fileUploadRequest.getContentLength())
