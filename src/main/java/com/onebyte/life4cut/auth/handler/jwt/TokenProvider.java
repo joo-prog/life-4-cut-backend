@@ -12,11 +12,15 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,17 +30,24 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TokenProvider implements InitializingBean {
+  private final RedisTemplate<String, String> redisTemplate;
   private static final String AUTHORITY_KEY = "auth";
   private final String secret;
   private final long expires;
+  private final long refreshExpires;
   private Key key;
 
   public TokenProvider(
+      RedisTemplate<String, String> redisTemplate,
       @Value("${auth.jwt.secret}") String secret,
-      @Value("${auth.jwt.expires}") long expires
+      @Value("${auth.jwt.expires}") long expires,
+      @Value("${auth.jwt.refresh-expires}") long refreshExpires
   ) {
+    this.redisTemplate = redisTemplate;
     this.secret = secret;
-    this.expires = expires * 60 * 60 * 1000;
+//    this.expires = expires * 60 * 60 * 1000;
+    this.expires = expires;
+    this.refreshExpires = refreshExpires * 60 * 60 * 1000;
   }
 
   @Override
@@ -45,7 +56,7 @@ public class TokenProvider implements InitializingBean {
     this.key = Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String createToken(Authentication authentication) {
+  public String createToken(Authentication authentication, long userId, String nickname) {
 
     String authorities = authentication.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
@@ -53,12 +64,44 @@ public class TokenProvider implements InitializingBean {
 
     long now = System.currentTimeMillis(); // Date getTime 메소드보다 우수
 
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("userId", userId);
+    payload.put("nickname", nickname);
+    payload.put(AUTHORITY_KEY, authorities);
+
     return Jwts.builder()
         .setSubject(authentication.getName())
-        .claim(AUTHORITY_KEY, authorities)
+        .setClaims(payload)
         .signWith(key, SignatureAlgorithm.HS512)
         .setExpiration(new Date(now + this.expires))
         .compact();
+  }
+
+  public String createRefreshToken(Authentication authentication, long userId, String nickname) {
+    String authorities = authentication.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.joining(","));
+    long now = System.currentTimeMillis();
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("userId", userId);
+    payload.put("nickname", nickname);
+    payload.put(AUTHORITY_KEY, authorities);
+
+    String refreshToken = Jwts.builder()
+        .setSubject(authentication.getName())
+        .setClaims(payload)
+        .setExpiration(new Date(now + this.refreshExpires))
+        .signWith(key, SignatureAlgorithm.HS512)
+        .compact();
+
+    redisTemplate.opsForValue().set(
+        authentication.getName(),
+        refreshToken,
+        refreshExpires,
+        TimeUnit.MICROSECONDS
+    );
+    return refreshToken;
   }
 
   public Authentication getAuthentication(String token) {
@@ -68,12 +111,17 @@ public class TokenProvider implements InitializingBean {
         .parseClaimsJws(token)
         .getBody();
 
+    log.debug("Token Expiration: {}", claims.getExpiration());
+
     List<GrantedAuthority> authorities = Arrays.stream(
             claims.get(AUTHORITY_KEY).toString().split(","))
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
 
-    CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", authorities);
+    long userId = claims.get("userId", Long.class);
+    String nickname = claims.get("nickname", String.class);
+
+    CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", userId, nickname, authorities);
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);
   }
 
