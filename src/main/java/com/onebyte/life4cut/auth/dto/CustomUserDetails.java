@@ -7,14 +7,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails, Serializable {
 
-  public CustomUserDetails(String username, String password, Collection<GrantedAuthority> authorities) {
+  public CustomUserDetails(String username, String password, long userId, String nickname,
+      Collection<GrantedAuthority> authorities) {
     this.username = username;
     this.password = password;
+    this.userId = userId;
+    this.nickname = nickname;
     this.authorities = authorities;
   }
 
   private final String username;
   private final String password;
+  private final long userId;
+  private final String nickname;
   private final Collection<GrantedAuthority> authorities;
 
   @Override
@@ -30,6 +35,14 @@ public class CustomUserDetails implements UserDetails, Serializable {
   @Override
   public String getUsername() {
     return username;
+  }
+
+  public long getUserId() {
+    return userId;
+  }
+
+  public String getNickname() {
+    return nickname;
   }
 
   /**
