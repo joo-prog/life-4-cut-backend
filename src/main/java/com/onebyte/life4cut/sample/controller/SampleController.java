@@ -35,6 +35,14 @@ public class SampleController {
 
     }
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<String> OK() {
+        return ApiResponse.OK(
+            "OK"
+        );
+    }
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<SampleFindResponse> find(@PathVariable long id) {
