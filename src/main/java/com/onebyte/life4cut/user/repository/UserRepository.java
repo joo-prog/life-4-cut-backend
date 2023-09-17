@@ -12,4 +12,6 @@ public interface UserRepository {
   Optional<User> findUser(long id);
 
   List<User> findUserByOAuthInfo(OAuthInfo oAuthInfo);
+
+  Optional<User> findUserByNickname(String nickname);
 }

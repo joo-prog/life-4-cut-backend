@@ -49,5 +49,14 @@ public class UserRepositoryImpl implements UserRepository {
         .fetch();
   }
 
-
+  @Override
+  public Optional<User> findUserByNickname(String nickname) {
+    return query.select(user)
+        .from(user)
+        .where(
+            user.nickname.eq(nickname)
+        )
+        .fetch()
+        .stream().findAny();
+  }
 }
