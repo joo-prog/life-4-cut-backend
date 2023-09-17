@@ -2,17 +2,17 @@ package com.onebyte.life4cut.support.fileUpload;
 
 import jakarta.annotation.Nonnull;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.UUID;
 
-public class MultipartFileUploadRequest implements FileUploadRequest{
+public class MultipartFileUploadRequest implements FileUploadRequest {
 
     private static final String DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-    private static final String DEFAULT_FILE_NAME = "file";
+    private static final String DEFAULT_FILE_NAME = "default_file_name";
 
     @Nonnull
     private final MultipartFile multipartFile;
@@ -48,19 +48,19 @@ public class MultipartFileUploadRequest implements FileUploadRequest{
     @Nonnull
     @Override
     public String getFileName() {
-        if (Objects.isNull(multipartFile.getOriginalFilename())) {
-            return String.format("/%s/%s", UUID.randomUUID(), DEFAULT_FILE_NAME);
+        if (StringUtils.hasText(multipartFile.getOriginalFilename())) {
+            return String.format("/%s/%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
         }
-        return String.format("/%s/%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
+        return String.format("/%s/%s", UUID.randomUUID(), DEFAULT_FILE_NAME);
     }
 
     @Nonnull
     @Override
     public String getContentType() {
-        if (Objects.isNull(multipartFile.getContentType())) {
-            return DEFAULT_CONTENT_TYPE;
+        if (StringUtils.hasText(multipartFile.getContentType())) {
+            return multipartFile.getContentType();
         }
-        return multipartFile.getContentType();
+        return DEFAULT_CONTENT_TYPE;
 
     }
 
