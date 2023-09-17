@@ -5,7 +5,7 @@ import com.onebyte.life4cut.auth.dto.OAuthInfo;
 import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
 import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
 import com.onebyte.life4cut.user.domain.User;
-import com.onebyte.life4cut.user.dto.UserSignInRequest;
+import com.onebyte.life4cut.user.controller.dto.UserSignInRequest;
 import com.onebyte.life4cut.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

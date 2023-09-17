@@ -1,4 +1,4 @@
-package com.onebyte.life4cut.user.dto;
+package com.onebyte.life4cut.user.controller.dto;
 
 import com.onebyte.life4cut.user.domain.User;
 import lombok.Builder;
