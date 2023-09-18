@@ -79,9 +79,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
       } else {
         user = findUser.get();
       }
-      String accessToken = tokenProvider.createToken(authentication, user.getId(), user.getNickname());
-      String refreshToken = tokenProvider.createRefreshToken(
-          authentication, user.getId(), user.getNickname());
+      String accessToken = tokenProvider.createAccessToken(authentication, user.getId());
+      String refreshToken = tokenProvider.createRefreshToken(authentication, user.getId());
       refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
 
       // JWT 방식

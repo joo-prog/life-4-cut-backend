@@ -25,7 +25,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private static final String AUTHORIZATION_HEADER = "Authorization";
   private final TokenProvider tokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
   private final FilterExceptionHandler filterExceptionHandler;
@@ -35,9 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-    String accessToken = resolveAccessToken(httpServletRequest);
-    String requestUri = httpServletRequest.getRequestURI();
+
+    String accessToken = resolveAccessToken(request);
+    String requestUri = request.getRequestURI();
 
     if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
       Authentication authentication = tokenProvider.getAuthentication(accessToken);
@@ -84,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
     validateRefreshToken(refreshToken, userDetails, response);
 
-    String jwt = tokenProvider.createToken(authentication, userDetails.getUserId(), userDetails.getNickname());
+    String jwt = tokenProvider.createAccessToken(authentication, userDetails.getUserId());
     log.info("new JWT TOKEN: {}", jwt);
     response.addHeader(HttpHeaders.SET_COOKIE, jwt);
     SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -7,19 +7,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails, Serializable {
 
-  public CustomUserDetails(String username, String password, long userId, String nickname,
+  public CustomUserDetails(String username, String password, long userId,
       Collection<GrantedAuthority> authorities) {
     this.username = username;
     this.password = password;
     this.userId = userId;
-    this.nickname = nickname;
     this.authorities = authorities;
   }
 
   private final String username;
   private final String password;
   private final long userId;
-  private final String nickname;
   private final Collection<GrantedAuthority> authorities;
 
   @Override
@@ -41,9 +39,6 @@ public class CustomUserDetails implements UserDetails, Serializable {
     return userId;
   }
 
-  public String getNickname() {
-    return nickname;
-  }
 
   /**
    * 계정 만료되지 않았는지 여부

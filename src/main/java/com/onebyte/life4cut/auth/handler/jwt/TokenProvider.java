@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 public class TokenProvider implements InitializingBean {
   private final RedisTemplate<String, String> redisTemplate;
   private static final String AUTHORITY_KEY = "auth";
+  private static final String USER_ID = "userId";
   private final String secret;
   private final long expires;
   private final long refreshExpires;
@@ -56,7 +57,7 @@ public class TokenProvider implements InitializingBean {
     this.key = Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String createToken(Authentication authentication, long userId, String nickname) {
+  public String createAccessToken(Authentication authentication, long userId) {
 
     String authorities = authentication.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
@@ -65,8 +66,7 @@ public class TokenProvider implements InitializingBean {
     long now = System.currentTimeMillis(); // Date getTime 메소드보다 우수
 
     Map<String, Object> payload = new HashMap<>();
-    payload.put("userId", userId);
-    payload.put("nickname", nickname);
+    payload.put(USER_ID, userId);
     payload.put(AUTHORITY_KEY, authorities);
 
     return Jwts.builder()
@@ -77,15 +77,14 @@ public class TokenProvider implements InitializingBean {
         .compact();
   }
 
-  public String createRefreshToken(Authentication authentication, long userId, String nickname) {
+  public String createRefreshToken(Authentication authentication, long userId) {
     String authorities = authentication.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(","));
     long now = System.currentTimeMillis();
 
     Map<String, Object> payload = new HashMap<>();
-    payload.put("userId", userId);
-    payload.put("nickname", nickname);
+    payload.put(USER_ID, userId);
     payload.put(AUTHORITY_KEY, authorities);
 
     String refreshToken = Jwts.builder()
@@ -118,10 +117,9 @@ public class TokenProvider implements InitializingBean {
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
 
-    long userId = claims.get("userId", Long.class);
-    String nickname = claims.get("nickname", String.class);
+    long userId = claims.get(USER_ID, Long.class);
 
-    CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", userId, nickname, authorities);
+    CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", userId, authorities);
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);
   }
 
