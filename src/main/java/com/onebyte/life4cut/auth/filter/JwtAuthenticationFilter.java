@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -35,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-    String jwt = resolveToken(httpServletRequest);
+    String accessToken = resolveAccessToken(httpServletRequest);
     String requestUri = httpServletRequest.getRequestURI();
 
-    if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-      Authentication authentication = tokenProvider.getAuthentication(jwt);
+    if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
+      Authentication authentication = tokenProvider.getAuthentication(accessToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
       log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestUri);
     } else {
@@ -50,10 +51,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private String resolveToken(HttpServletRequest request) {
-    String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-      return bearerToken.substring(7);
+  private String resolveAccessToken(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    for (Cookie cookie: cookies) {
+      String name = cookie.getName();
+      if (name.equals("accessToken")) {
+        return cookie.getValue();
+      }
     }
     return null;
   }
@@ -82,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     String jwt = tokenProvider.createToken(authentication, userDetails.getUserId(), userDetails.getNickname());
     log.info("new JWT TOKEN: {}", jwt);
-    response.setHeader("Authorization", "Bearer " + jwt);
+    response.addHeader(HttpHeaders.SET_COOKIE, jwt);
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
@@ -91,6 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     Optional<RefreshToken> findRefresh = refreshTokenRepository.findById(refreshToken);
     if (findRefresh.isEmpty()) {
       filterExceptionHandler.sendErrorResponse(response, new RefreshTokenNotValid());
+      return;
     }
     long userId = findRefresh.get().getUserId();
     long tokenUserId = userDetails.getUserId();

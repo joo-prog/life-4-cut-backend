@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,8 +46,7 @@ public class TokenProvider implements InitializingBean {
   ) {
     this.redisTemplate = redisTemplate;
     this.secret = secret;
-//    this.expires = expires * 60 * 60 * 1000;
-    this.expires = expires;
+    this.expires = expires * 60 * 60 * 1000;
     this.refreshExpires = refreshExpires * 60 * 60 * 1000;
   }
 
@@ -143,5 +143,14 @@ public class TokenProvider implements InitializingBean {
       log.info("JWT 토큰이 잘못되었습니다.");
     }
     return false;
+  }
+
+  public ResponseCookie makeTokenCookie(String name, String token) {
+    return ResponseCookie.from(name, token)
+        .httpOnly(true)
+        .secure(true)
+        .maxAge(14 * 24 * 60 * 60 * 1000)
+        .path("/")
+        .build();
   }
 }

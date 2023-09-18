@@ -19,6 +19,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -78,15 +79,16 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
       } else {
         user = findUser.get();
       }
-      String jwt = tokenProvider.createToken(authentication, user.getId(), user.getNickname());
+      String accessToken = tokenProvider.createToken(authentication, user.getId(), user.getNickname());
       String refreshToken = tokenProvider.createRefreshToken(
           authentication, user.getId(), user.getNickname());
       refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
 
       // JWT 방식
-      response.setHeader("Authorization", "Bearer " + jwt);
-      ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken).build();
-      response.setHeader("Set-Cookie", cookie.toString());
+      ResponseCookie accessTokenCookie = tokenProvider.makeTokenCookie("accessToken", accessToken);
+      ResponseCookie refreshTokenCookie = tokenProvider.makeTokenCookie("refreshToken", refreshToken);
+      response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+      response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
       super.onAuthenticationSuccess(request, response, authentication);
 
