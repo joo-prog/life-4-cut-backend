@@ -1,11 +1,12 @@
 package com.onebyte.life4cut.config;
 
 import com.onebyte.life4cut.auth.filter.JwtAuthenticationFilter;
+import com.onebyte.life4cut.auth.handler.ClientAccessDeniedHandler;
+import com.onebyte.life4cut.auth.handler.ClientAuthenticationEntryPoint;
 import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
 import com.onebyte.life4cut.auth.handler.oauth.OAuth2LoginFailureHandler;
 import com.onebyte.life4cut.auth.handler.oauth.OAuth2LoginSuccessHandler;
 import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
-import com.onebyte.life4cut.common.exception.filter.FilterExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,8 @@ public class SecurityConfiguration {
   private final OAuth2LoginFailureHandler oAuthLoginFailureHandler;
   private final TokenProvider tokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
-  private final FilterExceptionHandler filterExceptionHandler;
+  private final ClientAuthenticationEntryPoint clientAuthenticationEntryPoint;
+  private final ClientAccessDeniedHandler clientAccessDeniedHandler;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,8 +47,7 @@ public class SecurityConfiguration {
         )
 
         .addFilterBefore(
-            new JwtAuthenticationFilter(
-                tokenProvider, refreshTokenRepository, filterExceptionHandler),
+            new JwtAuthenticationFilter(tokenProvider, refreshTokenRepository),
             UsernamePasswordAuthenticationFilter.class
         )
 
@@ -59,6 +60,12 @@ public class SecurityConfiguration {
                 .successHandler(oAuthLoginSuccessHandler)
                 .failureHandler(oAuthLoginFailureHandler)
         )
+
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(clientAuthenticationEntryPoint)
+            .accessDeniedHandler(clientAccessDeniedHandler)
+        )
+
         .build();
   }
 

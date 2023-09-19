@@ -4,7 +4,6 @@ import com.onebyte.life4cut.auth.domain.RefreshToken;
 import com.onebyte.life4cut.auth.dto.CustomUserDetails;
 import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
 import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
-import com.onebyte.life4cut.common.exception.filter.FilterExceptionHandler;
 import com.onebyte.life4cut.user.exception.RefreshTokenNotValid;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final TokenProvider tokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
-  private final FilterExceptionHandler filterExceptionHandler;
 
   @Override
   protected void doFilterInternal(
@@ -41,7 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
       Authentication authentication = tokenProvider.getAuthentication(accessToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestUri);
+      log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(),
+          requestUri);
     } else {
       checkRefreshToken(request, response);
       log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestUri);
@@ -52,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private String resolveAccessToken(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
-    for (Cookie cookie: cookies) {
+    for (Cookie cookie : cookies) {
       String name = cookie.getName();
       if (name.equals("accessToken")) {
         return cookie.getValue();
@@ -63,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private String resolveRefreshToken(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
-    for (Cookie cookie: cookies) {
+    for (Cookie cookie : cookies) {
       String name = cookie.getName();
       if (name.equals("refreshToken")) {
         return cookie.getValue();
@@ -89,18 +88,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
-  private void validateRefreshToken(String refreshToken, CustomUserDetails userDetails, HttpServletResponse response) {
+  private void validateRefreshToken(String refreshToken, CustomUserDetails userDetails,
+      HttpServletResponse response) {
     log.info("Validate Refresh Token");
     Optional<RefreshToken> findRefresh = refreshTokenRepository.findById(refreshToken);
     if (findRefresh.isEmpty()) {
-      filterExceptionHandler.sendErrorResponse(response, new RefreshTokenNotValid());
-      return;
+      throw new RefreshTokenNotValid();
     }
     long userId = findRefresh.get().getUserId();
     long tokenUserId = userDetails.getUserId();
 
     if (userId != tokenUserId) {
-      filterExceptionHandler.sendErrorResponse(response, new RefreshTokenNotValid());
+      throw new RefreshTokenNotValid();
     }
   }
 }

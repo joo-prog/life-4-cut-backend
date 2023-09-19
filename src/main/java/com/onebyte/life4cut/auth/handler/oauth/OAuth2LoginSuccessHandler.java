@@ -6,7 +6,6 @@ import com.onebyte.life4cut.auth.exception.NotSupportOAuthType;
 import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
 import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
 import com.onebyte.life4cut.common.constants.OAuthType;
-import com.onebyte.life4cut.common.exception.filter.FilterExceptionHandler;
 import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.dto.UserSignInRequest;
 import com.onebyte.life4cut.user.service.UserService;
@@ -41,7 +40,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
   private final UserService userService;
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenProvider tokenProvider;
-  private final FilterExceptionHandler filterExceptionHandler;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -52,48 +50,44 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     OAuthInfo oAuthInfo = new OAuthInfo();
 
-    try {
-      if (type.equals("kakao-login")) {
-        log.info("token principal: {}", token.getPrincipal());
-        setKakao(oAuthInfo, token);
-      } else if (type.equals("naver-login")) {
-        log.info("token principal: {}", token.getPrincipal());
-        setNaver(oAuthInfo, token);
-      } else if (type.equals("google-login")) {
-        log.info("token principal: {}", token.getPrincipal());
-        setGoogle(oAuthInfo, token);
-      } else {
-        throw new NotSupportOAuthType();
-      }
-
-      User user = null;
-      Optional<User> findUser = userService.findUserByOAuthInfo(oAuthInfo);
-      if (findUser.isEmpty()) {
-        UserSignInRequest signInUser = UserSignInRequest.builder()
-            .nickname(oAuthInfo.getEmail())
-            .email(oAuthInfo.getEmail())
-            .oauthId(oAuthInfo.getOauthId())
-            .oauthType(oAuthInfo.getOauthType().getType())
-            .build();
-        user = userService.save(signInUser);
-      } else {
-        user = findUser.get();
-      }
-      String accessToken = tokenProvider.createAccessToken(authentication, user.getId());
-      String refreshToken = tokenProvider.createRefreshToken(authentication, user.getId());
-      refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
-
-      // JWT 방식
-      ResponseCookie accessTokenCookie = tokenProvider.makeTokenCookie("accessToken", accessToken);
-      ResponseCookie refreshTokenCookie = tokenProvider.makeTokenCookie("refreshToken", refreshToken);
-      response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-      response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
-      super.onAuthenticationSuccess(request, response, authentication);
-
-    } catch (NotSupportOAuthType e) {
-      filterExceptionHandler.sendErrorResponse(response, e);
+    if (type.equals("kakao-login")) {
+      log.info("token principal: {}", token.getPrincipal());
+      setKakao(oAuthInfo, token);
+    } else if (type.equals("naver-login")) {
+      log.info("token principal: {}", token.getPrincipal());
+      setNaver(oAuthInfo, token);
+    } else if (type.equals("google-login")) {
+      log.info("token principal: {}", token.getPrincipal());
+      setGoogle(oAuthInfo, token);
+    } else {
+      throw new NotSupportOAuthType();
     }
+
+    User user = null;
+    Optional<User> findUser = userService.findUserByOAuthInfo(oAuthInfo);
+    if (findUser.isEmpty()) {
+      UserSignInRequest signInUser = UserSignInRequest.builder()
+          .nickname(oAuthInfo.getEmail())
+          .email(oAuthInfo.getEmail())
+          .oauthId(oAuthInfo.getOauthId())
+          .oauthType(oAuthInfo.getOauthType().getType())
+          .build();
+      user = userService.save(signInUser);
+    } else {
+      user = findUser.get();
+    }
+    String accessToken = tokenProvider.createAccessToken(authentication, user.getId());
+    String refreshToken = tokenProvider.createRefreshToken(authentication, user.getId());
+    refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
+
+    // JWT 방식
+    ResponseCookie accessTokenCookie = tokenProvider.makeTokenCookie("accessToken", accessToken);
+    ResponseCookie refreshTokenCookie = tokenProvider.makeTokenCookie("refreshToken", refreshToken);
+    response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+    super.onAuthenticationSuccess(request, response, authentication);
+
   }
 
   private void setKakao(OAuthInfo oAuthInfo, OAuth2AuthenticationToken token) {
