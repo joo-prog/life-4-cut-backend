@@ -102,6 +102,9 @@ auth:
     expires: 1
     refresh-expires: 24
 
+aws:
+  region: ap-northeast-2
+
 #logging:
 #  level:
 #    org.springframework.security: TRACE
