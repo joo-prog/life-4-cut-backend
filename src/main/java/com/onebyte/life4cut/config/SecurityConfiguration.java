@@ -1,49 +1,74 @@
 package com.onebyte.life4cut.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.onebyte.life4cut.auth.filter.JwtAuthenticationFilter;
+import com.onebyte.life4cut.auth.handler.ClientAccessDeniedHandler;
+import com.onebyte.life4cut.auth.handler.ClientAuthenticationEntryPoint;
+import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
+import com.onebyte.life4cut.auth.handler.oauth.OAuth2LoginFailureHandler;
+import com.onebyte.life4cut.auth.handler.oauth.OAuth2LoginSuccessHandler;
+import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
-
+@RequiredArgsConstructor
 @Configuration
-@EnableRedisHttpSession
+@EnableWebSecurity
 public class SecurityConfiguration {
 
+  private final OAuth2UserService oAuth2UserService;
+  private final OAuth2LoginSuccessHandler oAuthLoginSuccessHandler;
+  private final OAuth2LoginFailureHandler oAuthLoginFailureHandler;
+  private final TokenProvider tokenProvider;
+  private final RefreshTokenRepository refreshTokenRepository;
+  private final ClientAuthenticationEntryPoint clientAuthenticationEntryPoint;
+  private final ClientAccessDeniedHandler clientAccessDeniedHandler;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/samples").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login((oauth2) -> oauth2
-                        // 로그인 페이지
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/api/v1/samples").authenticated()
+            .anyRequest().permitAll()
+        )
+
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+
+        .addFilterBefore(
+            new JwtAuthenticationFilter(tokenProvider, refreshTokenRepository),
+            UsernamePasswordAuthenticationFilter.class
+        )
+
+        .oauth2Login((oauth2) -> oauth2
+                // 로그인 페이지
 //                        .loginPage("frontend-login-page")
-                                .successHandler(new CustomSuccessHandler())
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService)
                 )
-                .build();
-    }
+                .successHandler(oAuthLoginSuccessHandler)
+                .failureHandler(oAuthLoginFailureHandler)
+        )
 
-    private static class CustomSuccessHandler implements AuthenticationSuccessHandler {
-        @Override
-        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-            // 로그인 성공시 처리 추가
-            response.sendRedirect("/oauth-success");
-        }
-    }
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(clientAuthenticationEntryPoint)
+            .accessDeniedHandler(clientAccessDeniedHandler)
+        )
+
+        .build();
+  }
 
 
 }

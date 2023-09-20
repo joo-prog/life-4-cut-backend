@@ -1,15 +1,19 @@
 package com.onebyte.life4cut.common.exception;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 
-@Builder
 @Getter
 public class CustomErrorResponse {
-  @NotBlank
-  private String name;
+
+  public CustomErrorResponse(String message) {
+    this.message = message;
+  }
 
   @NotBlank
-  private String message;
+  private final String message;
+
+  private final Map<String, String> data = new HashMap<>();
 }
