@@ -21,7 +21,7 @@ public class UserController {
   public ApiResponse<UserFindResponse> findUser(@RequestParam("nickname") String nickname) {
     User result = userService.findUserByNickname(nickname);
     return ApiResponse.OK(
-      new UserFindResponse(result.getId(), result.getNickname(), result.getEmail())
+        UserFindResponse.of(result)
     );
   }
 }
