@@ -1,4 +1,4 @@
-package com.onebyte.life4cut.album.domain;
+package com.onebyte.life4cut.picture.domain;
 
 
 import com.onebyte.life4cut.common.entity.BaseEntity;
@@ -8,7 +8,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
         }
 )
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Picture extends BaseEntity {
 
     @Nonnull
@@ -45,4 +48,15 @@ public class Picture extends BaseEntity {
     @Nullable
     @Column
     private LocalDateTime deletedAt;
+
+    @Nonnull
+    public static Picture create(@Nonnull Long userId, @Nonnull Long albumId, @Nonnull String path, @Nonnull String content, @Nonnull LocalDateTime picturedAt) {
+        Picture picture = new Picture();
+        picture.userId = userId;
+        picture.albumId = albumId;
+        picture.path = path;
+        picture.content = content;
+        picture.picturedAt = picturedAt;
+        return picture;
+    }
 }

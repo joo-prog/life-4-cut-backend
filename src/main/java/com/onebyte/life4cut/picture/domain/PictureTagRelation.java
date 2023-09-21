@@ -1,4 +1,4 @@
-package com.onebyte.life4cut.album.domain;
+package com.onebyte.life4cut.picture.domain;
 
 import com.onebyte.life4cut.common.entity.BaseEntity;
 import jakarta.annotation.Nonnull;
