@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -44,7 +45,7 @@ class SlotQueryRepositoryTest {
             );
 
             // when
-            Slot findSlot = slotQueryRepository.findById(slot.getId());
+            Slot findSlot = slotQueryRepository.findById(slot.getId()).orElseThrow();
 
             // then
             assertThat(findSlot.getId()).isEqualTo(slot.getId());
@@ -61,10 +62,10 @@ class SlotQueryRepositoryTest {
             );
 
             // when
-            Slot findSlot = slotQueryRepository.findById(slot.getId());
+            Optional<Slot> findSlot = slotQueryRepository.findById(slot.getId());
 
             // then
-            assertThat(findSlot).isNull();
+            assertThat(findSlot).isEmpty();
         }
     }
 
