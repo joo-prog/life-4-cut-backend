@@ -111,6 +111,8 @@ auth:
 
 aws:
   region: ap-northeast-2
+  s3:
+    bucket: life-4-cut-development
 
 #logging:
 #  level:

@@ -14,6 +14,10 @@ public enum ErrorCode {
   REFRESH_TOKEN_NOT_VALID(HttpStatus.FORBIDDEN, ExceptionMessage.REFRESH_TOKEN_NOT_VALID.getMessage()),
   SAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.SAMPLE_NOT_FOUND.getMessage()),
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.USER_NOT_FOUND.getMessage()),
+  ALBUM_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.ALBUM_NOT_FOUND.getMessage()),
+  SLOT_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.SLOT_NOT_FOUND.getMessage()),
+  ALBUM_DOES_NOT_HAVE_SLOT(HttpStatus.BAD_REQUEST, ExceptionMessage.ALBUM_DOES_NOT_HAVE_SLOT.getMessage()),
+  USER_ALBUM_ROLE_PERMISSION(HttpStatus.FORBIDDEN, ExceptionMessage.USER_ALBUM_ROLE_PERMISSION.getMessage()),
   ;
 
   private final HttpStatus status;

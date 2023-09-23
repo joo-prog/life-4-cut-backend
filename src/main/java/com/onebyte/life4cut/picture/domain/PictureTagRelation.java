@@ -7,7 +7,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_picture_tag_relation_3", columnList = "tagId")
         }
 )
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class PictureTagRelation extends BaseEntity {
     @Nonnull
     @Column(nullable = false)
@@ -36,4 +39,14 @@ public class PictureTagRelation extends BaseEntity {
     @Nullable
     @Column
     private LocalDateTime deletedAt;
+
+    @Nonnull
+    public static PictureTagRelation create(@Nonnull Long pictureId, @Nonnull Long albumId, @Nonnull Long tagId) {
+        PictureTagRelation pictureTagRelation = new PictureTagRelation();
+        pictureTagRelation.pictureId = pictureId;
+        pictureTagRelation.albumId = albumId;
+        pictureTagRelation.tagId = tagId;
+        return pictureTagRelation;
+    }
+
 }
