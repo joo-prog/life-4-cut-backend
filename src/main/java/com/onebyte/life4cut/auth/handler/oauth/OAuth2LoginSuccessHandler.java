@@ -39,7 +39,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     String type = token.getAuthorizedClientRegistrationId();
     OAuthInfo oAuthInfo = OAuthInfo.createOAuthInfo(type, token);
 
-    User user = null;
     Optional<User> findUser = userService.findUserByOAuthInfo(oAuthInfo);
     if (findUser.isEmpty()) {
       UserSignInRequest signInUser = UserSignInRequest.builder()
@@ -48,10 +47,16 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
           .oauthId(oAuthInfo.getOauthId())
           .oauthType(oAuthInfo.getOauthType().getType())
           .build();
-      user = userService.save(signInUser);
+      User user = userService.save(signInUser);
+      setTokenCookie(request, response, authentication, user);
     } else {
-      user = findUser.get();
+      User user = findUser.get();
+      setTokenCookie(request, response, authentication, user);
     }
+  }
+
+  private void setTokenCookie(HttpServletRequest request, HttpServletResponse response,
+      Authentication authentication, User user) throws IOException, ServletException {
     String accessToken = tokenProvider.createAccessToken(authentication, user.getId());
     String refreshToken = tokenProvider.createRefreshToken(authentication, user.getId());
     refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
@@ -63,6 +68,5 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
     super.onAuthenticationSuccess(request, response, authentication);
-
   }
 }
