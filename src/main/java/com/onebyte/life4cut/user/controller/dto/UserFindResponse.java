@@ -1,11 +1,12 @@
 package com.onebyte.life4cut.user.controller.dto;
 
 import com.onebyte.life4cut.user.domain.User;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFindResponse {
 
   private final long userId;
