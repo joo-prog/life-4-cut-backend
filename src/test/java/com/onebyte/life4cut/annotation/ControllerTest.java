@@ -1,7 +1,6 @@
 package com.onebyte.life4cut.annotation;
 
 import com.onebyte.life4cut.config.TestSecurityConfiguration;
-import com.onebyte.life4cut.config.WebConfiguration;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -20,7 +19,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @AutoConfigureRestDocs
 @ExtendWith({MockitoExtension.class, RestDocumentationExtension.class, SpringExtension.class})
-@ImportAutoConfiguration({TestSecurityConfiguration.class, WebConfiguration.class})
+@ImportAutoConfiguration({TestSecurityConfiguration.class})
 @WebMvcTest
 public @interface ControllerTest {
     @AliasFor(annotation = WebMvcTest.class, attribute = "controllers")
