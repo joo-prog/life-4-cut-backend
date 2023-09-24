@@ -14,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.onebyte.life4cut.auth.dto.CustomUserDetails;
-import com.onebyte.life4cut.common.ControllerTest;
+import com.onebyte.life4cut.common.annotation.WithCustomMockUser;
+import com.onebyte.life4cut.common.controller.ControllerTest;
 import com.onebyte.life4cut.config.TestSecurityConfiguration;
 import com.onebyte.life4cut.user.controller.dto.UserFindResponse;
 import com.onebyte.life4cut.user.domain.User;
@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
@@ -92,6 +91,7 @@ class UserControllerTest extends ControllerTest {
         .andDo(print());
   }
 
+  @WithCustomMockUser
   @DisplayName("@AuthenticationPrincipal을 통해 본인을 조회한다.")
   @Test
   void findMe() throws Exception {
@@ -105,15 +105,13 @@ class UserControllerTest extends ControllerTest {
         .profilePath("profilePath")
         .email("bell@gmail.com")
         .build();
-    CustomUserDetails principal = new CustomUserDetails(user.getNickname(), "password",
-        user.getId(), AuthorityUtils.createAuthorityList("ADMIN"));
     UserFindResponse result = UserFindResponse.of(user);
 
     // when
     Mockito.when(userService.findUser(anyLong())).thenReturn(user);
 
     // then
-    ResultActions actions = performGet(baseUri + "/me", principal);
+    ResultActions actions = performGet(baseUri + "/me");
     actions.andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.data", equalTo(asParsedJson(result))))
