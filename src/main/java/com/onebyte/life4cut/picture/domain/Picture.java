@@ -57,7 +57,7 @@ public class Picture extends BaseEntity {
         picture.userId = userId;
         picture.albumId = albumId;
         picture.path = path;
-        picture.content = content;
+        picture.content = content.trim();
         picture.picturedAt = picturedAt;
         return picture;
     }

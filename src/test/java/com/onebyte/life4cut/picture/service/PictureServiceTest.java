@@ -18,6 +18,7 @@ import com.onebyte.life4cut.fixture.UserAlbumFixtureFactory;
 import com.onebyte.life4cut.picture.domain.Picture;
 import com.onebyte.life4cut.picture.domain.PictureTag;
 import com.onebyte.life4cut.picture.domain.PictureTagRelation;
+import com.onebyte.life4cut.picture.domain.vo.PictureTagName;
 import com.onebyte.life4cut.picture.repository.PictureRepository;
 import com.onebyte.life4cut.picture.repository.PictureTagQueryRepository;
 import com.onebyte.life4cut.picture.repository.PictureTagRelationRepository;
@@ -27,7 +28,10 @@ import com.onebyte.life4cut.support.fileUpload.FileUploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extensions;
 import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -298,7 +302,7 @@ class PictureServiceTest {
                     List.of(
                             pictureTagFixtureFactory.make((entity, builder) -> {
                                 builder.set("id", 1L);
-                                builder.set("name", tags.get(0));
+                                builder.set("name", PictureTagName.of(tags.get(0)));
                                 builder.set("albumId", albumId);
                                 builder.set("authorId", 10L);
                                 builder.setNull("deletedAt");
@@ -344,7 +348,7 @@ class PictureServiceTest {
             verify(pictureTagRepository).saveAll(newPictureTagsCapture.capture());
             List<PictureTag> newPictureTags = newPictureTagsCapture.getValue();
             assertThat(newPictureTags).hasSize(1);
-            assertThat(newPictureTags.get(0).getName()).isEqualTo(tags.get(1));
+            assertThat(newPictureTags.get(0).getName().getValue()).isEqualTo(tags.get(1));
 
             verify(pictureTagRelationRepository).saveAll(newPictureTagRelationsCapture.capture());
             List<PictureTagRelation> newPictureTagRelations = newPictureTagRelationsCapture.getValue();

@@ -1,9 +1,11 @@
 package com.onebyte.life4cut.picture.domain;
 
 import com.onebyte.life4cut.common.entity.BaseEntity;
+import com.onebyte.life4cut.picture.domain.vo.PictureTagName;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -32,8 +34,8 @@ public class PictureTag extends BaseEntity {
     private Long authorId;
 
     @Nonnull
-    @Column(nullable = false, length = 30)
-    private String name;
+    @Embedded
+    private PictureTagName name;
 
     @Nullable
     @Column
@@ -44,7 +46,7 @@ public class PictureTag extends BaseEntity {
         PictureTag pictureTag = new PictureTag();
         pictureTag.albumId = albumId;
         pictureTag.authorId = authorId;
-        pictureTag.name = name;
+        pictureTag.name = PictureTagName.of(name);
         return pictureTag;
     }
 }
