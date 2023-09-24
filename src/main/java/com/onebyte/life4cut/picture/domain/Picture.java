@@ -36,11 +36,11 @@ public class Picture extends BaseEntity {
     private Long albumId;
 
     @Nonnull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String path;
 
     @Nonnull
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Nonnull

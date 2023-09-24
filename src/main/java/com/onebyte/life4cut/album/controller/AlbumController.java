@@ -5,6 +5,8 @@ import com.onebyte.life4cut.album.controller.dto.CreatePictureResponse;
 import com.onebyte.life4cut.auth.dto.CustomUserDetails;
 import com.onebyte.life4cut.common.web.ApiResponse;
 import com.onebyte.life4cut.picture.service.PictureService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +27,8 @@ public class AlbumController {
 
     @PostMapping("/{albumId}/pictures")
     public ApiResponse<CreatePictureResponse> uploadPicture(
-            @PathVariable("albumId") Long albumId,
-            @RequestPart("data") CreatePictureRequest request,
+            @Min(1) @PathVariable("albumId") Long albumId,
+            @Valid @RequestPart("data") CreatePictureRequest request,
             @RequestPart("image") MultipartFile image,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long pictureId = pictureService.createInSlot(
@@ -34,7 +36,7 @@ public class AlbumController {
                 albumId,
                 request.slotId(),
                 request.content(),
-                request.picturedAt(),
+                request.picturedAt().atTime(0, 0),
                 request.tags(),
                 image
         );

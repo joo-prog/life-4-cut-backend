@@ -17,7 +17,7 @@ import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -55,13 +55,14 @@ class AlbumControllerTest {
             Long slotId = 1L;
             String content = "content";
             List<String> tags = List.of("tag1", "tag2");
-            LocalDateTime picturedAt = LocalDateTime.of(2021, 1, 1, 0, 0);
+            LocalDate picturedAt = LocalDate.of(2021, 1, 1);
             CreatePictureRequest request = new CreatePictureRequest(
                     slotId,
                     content,
                     tags,
                     picturedAt
             );
+
             MockMultipartFile image = new MockMultipartFile("image", "original-name.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
             MockMultipartFile data = new MockMultipartFile("data", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(request).getBytes());
 
