@@ -76,7 +76,7 @@ public class PictureService {
             throw new AlbumDoesNotHaveSlotException();
         }
 
-        List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(tags);
+        List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(albumId, tags);
         List<PictureTag> newPictureTags = tags.stream().filter(tag -> pictureTags.stream().noneMatch(pictureTag -> pictureTag.getName().getValue().equals(tag)))
                 .map(tag -> PictureTag.create(albumId, authorId, tag)).toList();
 
@@ -88,6 +88,7 @@ public class PictureService {
         slot.addPicture(picture.getId());
 
         pictureTagRepository.saveAll(newPictureTags);
+        pictureTags.forEach(PictureTag::restoreIfRequired);
 
         List<PictureTagRelation> newPictureTagRelations = Stream.concat(pictureTags.stream(), newPictureTags.stream()).map(pictureTag -> PictureTagRelation.create(picture.getId(), albumId, pictureTag.getId())).toList();
         pictureTagRelationRepository.saveAll(newPictureTagRelations);

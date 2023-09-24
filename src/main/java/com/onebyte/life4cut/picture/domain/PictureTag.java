@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -48,5 +49,19 @@ public class PictureTag extends BaseEntity {
         pictureTag.authorId = authorId;
         pictureTag.name = PictureTagName.of(name);
         return pictureTag;
+    }
+
+    public void restoreIfRequired() {
+        if (isDeleted()) {
+            restore();
+        }
+    }
+
+    private boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    private void restore() {
+        deletedAt = null;
     }
 }

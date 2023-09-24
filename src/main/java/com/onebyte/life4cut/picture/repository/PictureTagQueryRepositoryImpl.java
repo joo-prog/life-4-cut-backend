@@ -17,12 +17,13 @@ public class PictureTagQueryRepositoryImpl implements PictureTagQueryRepository{
         this.query = queryFactory;
     }
 
-    public List<PictureTag> findByNames(List<String> names) {
+    public List<PictureTag> findByNames(Long albumId, List<String> names) {
         return query
                 .selectFrom(pictureTag)
                 .where(
-                        pictureTag.name.value.in(names),
-                        pictureTag.deletedAt.isNull()
+                        pictureTag.albumId.eq(albumId),
+                        pictureTag.name.value.in(names)
+
                 ).fetch();
     }
 }

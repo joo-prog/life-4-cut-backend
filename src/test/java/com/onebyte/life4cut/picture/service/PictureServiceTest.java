@@ -250,7 +250,7 @@ class PictureServiceTest {
         }
 
         @Test
-        @DisplayName("사진 저장에 성공한다")
+        @DisplayName("필요한 경우 태그를 복구, 추가하며 사진을 저장한다")
         void save() {
             // given
             Long authorId = 1L;
@@ -258,7 +258,7 @@ class PictureServiceTest {
             Long slotId = 1L;
             String content = "content";
             LocalDateTime picturedAt = LocalDateTime.of(2023, 9, 23, 1, 1, 1);
-            List<String> tags = List.of("tag1", "tag2");
+            List<String> tags = List.of("existTag", "newTag", "deletedTag");
             MultipartFile image = new MockMultipartFile("image.png", "original-name.png", MimeTypeUtils.IMAGE_PNG_VALUE, "test".getBytes());
 
             when(albumQueryRepository.findById(albumId)).thenReturn(Optional.of(
@@ -289,17 +289,22 @@ class PictureServiceTest {
 
             when(slotQueryRepository.findById(slotId)).thenReturn(Optional.of(slot));
 
-            when(pictureTagQueryRepository.findByNames(tags)).thenReturn(
-                    List.of(
-                            pictureTagFixtureFactory.make((entity, builder) -> {
-                                builder.set("id", 1L);
-                                builder.set("name", PictureTagName.of(tags.get(0)));
-                                builder.set("albumId", albumId);
-                                builder.set("authorId", 10L);
-                                builder.setNull("deletedAt");
-                            })
-                    )
-            );
+            PictureTag existPictureTag = pictureTagFixtureFactory.make((entity, builder) -> {
+                builder.set("id", 1L);
+                builder.set("name", PictureTagName.of(tags.get(0)));
+                builder.set("albumId", albumId);
+                builder.set("authorId", 10L);
+                builder.setNull("deletedAt");
+            });
+
+            PictureTag deletedPictureTag = pictureTagFixtureFactory.make((entity, builder) -> {
+                builder.set("id", 2L);
+                builder.set("name", PictureTagName.of(tags.get(2)));
+                builder.set("albumId", albumId);
+                builder.set("authorId", 11L);
+                builder.set("deletedAt", LocalDateTime.now());
+            });
+            when(pictureTagQueryRepository.findByNames(albumId, tags)).thenReturn(List.of(existPictureTag, deletedPictureTag));
 
             when(fileUploader.upload(any())).thenReturn(new FileUploadResponse("test"));
 
@@ -343,15 +348,18 @@ class PictureServiceTest {
 
             verify(pictureTagRelationRepository).saveAll(newPictureTagRelationsCapture.capture());
             List<PictureTagRelation> newPictureTagRelations = newPictureTagRelationsCapture.getValue();
-            assertThat(newPictureTagRelations).hasSize(2);
+            assertThat(newPictureTagRelations).hasSize(3);
             assertThat(newPictureTagRelations.get(0).getTagId()).isEqualTo(1L);
             assertThat(newPictureTagRelations.get(0).getAlbumId()).isEqualTo(albumId);
             assertThat(newPictureTagRelations.get(0).getPictureId()).isEqualTo(1L);
-            assertThat(newPictureTagRelations.get(1).getTagId()).isEqualTo(10L);
+            assertThat(newPictureTagRelations.get(1).getTagId()).isEqualTo(2L);
             assertThat(newPictureTagRelations.get(1).getAlbumId()).isEqualTo(albumId);
             assertThat(newPictureTagRelations.get(1).getPictureId()).isEqualTo(1L);
+            assertThat(newPictureTagRelations.get(2).getTagId()).isEqualTo(10L);
+            assertThat(newPictureTagRelations.get(2).getAlbumId()).isEqualTo(albumId);
+            assertThat(newPictureTagRelations.get(2).getPictureId()).isEqualTo(1L);
 
-
+            assertThat(deletedPictureTag.getDeletedAt()).isNull();
         }
     }
 }

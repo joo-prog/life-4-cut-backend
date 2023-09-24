@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface PictureTagQueryRepository {
 
-    List<PictureTag> findByNames(List<String> names);
+    List<PictureTag> findByNames(Long albumId, List<String> names);
 }
