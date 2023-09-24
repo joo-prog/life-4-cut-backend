@@ -121,3 +121,6 @@ aws:
 #logging:
 #  level:
 #    org.springframework.security: TRACE
+#    org.hibernate.SQL: debug
+#    org.springframework.orm.jpa: DEBUG
+#    org.springframework.transaction: DEBUG
