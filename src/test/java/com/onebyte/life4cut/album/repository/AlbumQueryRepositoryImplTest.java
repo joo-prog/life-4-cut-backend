@@ -1,8 +1,7 @@
 package com.onebyte.life4cut.album.repository;
 
-import com.onebyte.life4cut.album.domain.Slot;
+import com.onebyte.life4cut.album.domain.Album;
 import com.onebyte.life4cut.fixture.AlbumFixtureFactory;
-import com.onebyte.life4cut.fixture.SlotFixtureFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -15,59 +14,57 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
 @EnableJpaAuditing
-class SlotQueryRepositoryTest {
+@DataJpaTest
+class AlbumQueryRepositoryImplTest {
 
-    private final SlotFixtureFactory slotFixtureFactory;
+    private final AlbumFixtureFactory albumFixtureFactory;
 
-    private final SlotQueryRepository slotQueryRepository;
+    private final AlbumQueryRepositoryImpl albumQueryRepositoryImpl;
 
     @Autowired
-    public SlotQueryRepositoryTest(EntityManager entityManager) {
-        this.slotFixtureFactory = new SlotFixtureFactory(entityManager);
-        this.slotQueryRepository = new SlotQueryRepository(new JPAQueryFactory(entityManager));
+    public AlbumQueryRepositoryImplTest(EntityManager entityManager) {
+        this.albumFixtureFactory = new AlbumFixtureFactory(entityManager);
+        this.albumQueryRepositoryImpl = new AlbumQueryRepositoryImpl(new JPAQueryFactory(entityManager));
     }
-
 
     @Nested
     class FindById {
+
         @Test
-        @DisplayName("슬롯을 조회한다")
+        @DisplayName("앨범을 조회한다")
         void findById() {
             // given
-            Slot slot = slotFixtureFactory.save(
+            Album album = albumFixtureFactory.save(
                     (entity, builder) -> {
                         builder.setNull("deletedAt");
                     }
             );
-
             // when
-            Slot findSlot = slotQueryRepository.findById(slot.getId()).orElseThrow();
+            Album findAlbum = albumQueryRepositoryImpl.findById(album.getId()).orElseThrow();
 
             // then
-            assertThat(findSlot.getId()).isEqualTo(slot.getId());
+            assertThat(findAlbum.getId()).isEqualTo(album.getId());
         }
 
         @Test
-        @DisplayName("삭제된 슬롯은 조회하지 않는다")
+        @DisplayName("삭제된 앨범은 조회하지 않는다")
         void deleted() {
             // given
-            Slot slot = slotFixtureFactory.save(
+            Album album = albumFixtureFactory.save(
                     (entity, builder) -> {
                         builder.set("deletedAt", LocalDateTime.now());
                     }
             );
 
             // when
-            Optional<Slot> findSlot = slotQueryRepository.findById(slot.getId());
+            Optional<Album> findAlbum = albumQueryRepositoryImpl.findById(album.getId());
 
             // then
-            assertThat(findSlot).isEmpty();
+            assertThat(findAlbum).isEmpty();
         }
     }
-
 
 }

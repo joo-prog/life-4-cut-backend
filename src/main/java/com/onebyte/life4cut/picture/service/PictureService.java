@@ -5,10 +5,12 @@ import com.onebyte.life4cut.album.domain.Slot;
 import com.onebyte.life4cut.album.domain.UserAlbum;
 import com.onebyte.life4cut.album.exception.AlbumDoesNotHaveSlotException;
 import com.onebyte.life4cut.album.exception.AlbumNotFoundException;
+import com.onebyte.life4cut.album.exception.SlotNotFoundException;
 import com.onebyte.life4cut.album.exception.UserAlbumRolePermissionException;
 import com.onebyte.life4cut.album.repository.AlbumQueryRepository;
 import com.onebyte.life4cut.album.repository.SlotQueryRepository;
 import com.onebyte.life4cut.album.repository.UserAlbumQueryRepository;
+import com.onebyte.life4cut.album.repository.UserAlbumQueryRepositoryImpl;
 import com.onebyte.life4cut.common.constants.S3Env;
 import com.onebyte.life4cut.common.exception.ErrorCode;
 import com.onebyte.life4cut.picture.domain.Picture;
@@ -71,7 +73,7 @@ public class PictureService {
             throw new UserAlbumRolePermissionException(ErrorCode.USER_ALBUM_ROLE_PERMISSION);
         }
 
-        Slot slot = slotQueryRepository.findById(slotId).orElseThrow(() -> new AlbumNotFoundException(ErrorCode.SLOT_NOT_FOUND));
+        Slot slot = slotQueryRepository.findById(slotId).orElseThrow(() -> new SlotNotFoundException(ErrorCode.SLOT_NOT_FOUND));
         if (!slot.isIn(album)) {
             throw new AlbumDoesNotHaveSlotException(ErrorCode.ALBUM_DOES_NOT_HAVE_SLOT);
         }
@@ -87,9 +89,9 @@ public class PictureService {
         pictureRepository.save(picture);
         slot.addPicture(picture.getId());
 
-        List<PictureTagRelation> newPictureTagRelations = Stream.concat(pictureTags.stream(), newPictureTags.stream()).map(pictureTag -> PictureTagRelation.create(picture.getId(), albumId, pictureTag.getId())).toList();
-
         pictureTagRepository.saveAll(newPictureTags);
+
+        List<PictureTagRelation> newPictureTagRelations = Stream.concat(pictureTags.stream(), newPictureTags.stream()).map(pictureTag -> PictureTagRelation.create(picture.getId(), albumId, pictureTag.getId())).toList();
         pictureTagRelationRepository.saveAll(newPictureTagRelations);
 
 
