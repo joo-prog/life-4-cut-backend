@@ -10,7 +10,6 @@ import com.onebyte.life4cut.album.repository.AlbumQueryRepository;
 import com.onebyte.life4cut.album.repository.SlotQueryRepository;
 import com.onebyte.life4cut.album.repository.UserAlbumQueryRepository;
 import com.onebyte.life4cut.common.constants.S3Env;
-import com.onebyte.life4cut.common.exception.ErrorCode;
 import com.onebyte.life4cut.fixture.AlbumFixtureFactory;
 import com.onebyte.life4cut.fixture.PictureTagFixtureFactory;
 import com.onebyte.life4cut.fixture.SlotFixtureFactory;
@@ -28,10 +27,7 @@ import com.onebyte.life4cut.support.fileUpload.FileUploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.Extensions;
 import org.mockito.ArgumentCaptor;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -52,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 class PictureServiceTest {
     private final AlbumQueryRepository albumQueryRepository = mock(AlbumQueryRepository.class);
-    private final SlotQueryRepository slotQueryRepositoryImpl = mock(SlotQueryRepository.class);
+    private final SlotQueryRepository slotQueryRepository = mock(SlotQueryRepository.class);
     private final UserAlbumQueryRepository userAlbumQueryRepository = mock(UserAlbumQueryRepository.class);
     private final PictureTagQueryRepository pictureTagQueryRepository = mock(PictureTagQueryRepository.class);
     private final PictureTagRepository pictureTagRepository = mock(PictureTagRepository.class);
@@ -60,7 +56,7 @@ class PictureServiceTest {
     private final PictureRepository pictureRepository = mock(PictureRepository.class);
     private final FileUploader fileUploader = mock(FileUploader.class);
     private final S3Env s3Env = new S3Env("test");
-    private final PictureService pictureService = new PictureService(slotQueryRepositoryImpl, albumQueryRepository, userAlbumQueryRepository, pictureTagQueryRepository, pictureTagRepository, pictureTagRelationRepository, pictureRepository, fileUploader, s3Env);
+    private final PictureService pictureService = new PictureService(slotQueryRepository, albumQueryRepository, userAlbumQueryRepository, pictureTagQueryRepository, pictureTagRepository, pictureTagRelationRepository, pictureRepository, fileUploader, s3Env);
     private final AlbumFixtureFactory albumFixtureFactory = new AlbumFixtureFactory();
     private final UserAlbumFixtureFactory userAlbumFixtureFactory = new UserAlbumFixtureFactory();
     private final SlotFixtureFactory slotFixtureFactory = new SlotFixtureFactory();
@@ -89,7 +85,6 @@ class PictureServiceTest {
             // then
             assertThat(throwable)
                     .isInstanceOf(AlbumNotFoundException.class)
-                    .hasMessage(ErrorCode.ALBUM_NOT_FOUND.getMessage())
                     .hasNoCause();
 
         }
@@ -121,7 +116,6 @@ class PictureServiceTest {
             // then
             assertThat(throwable)
                     .isInstanceOf(UserAlbumRolePermissionException.class)
-                    .hasMessage(ErrorCode.USER_ALBUM_ROLE_PERMISSION.getMessage())
                     .hasNoCause();
         }
 
@@ -162,7 +156,6 @@ class PictureServiceTest {
             // then
             assertThat(throwable)
                     .isInstanceOf(UserAlbumRolePermissionException.class)
-                    .hasMessage(ErrorCode.USER_ALBUM_ROLE_PERMISSION.getMessage())
                     .hasNoCause();
         }
 
@@ -197,7 +190,7 @@ class PictureServiceTest {
                     })
             ));
 
-            when(slotQueryRepositoryImpl.findById(slotId)).thenReturn(Optional.empty());
+            when(slotQueryRepository.findById(slotId)).thenReturn(Optional.empty());
 
             // when
             Throwable throwable = catchThrowable(() -> pictureService.createInSlot(authorId, albumId, slotId, content, picturedAt, tags, image));
@@ -205,7 +198,6 @@ class PictureServiceTest {
             // then
             assertThat(throwable)
                     .isInstanceOf(SlotNotFoundException.class)
-                    .hasMessage(ErrorCode.SLOT_NOT_FOUND.getMessage())
                     .hasNoCause();
         }
 
@@ -240,7 +232,7 @@ class PictureServiceTest {
                     })
             ));
 
-            when(slotQueryRepositoryImpl.findById(slotId)).thenReturn(Optional.of(
+            when(slotQueryRepository.findById(slotId)).thenReturn(Optional.of(
                     slotFixtureFactory.make((entity, builder) -> {
                         builder.set("id", slotId);
                         builder.set("albumId", albumId + 1);
@@ -254,7 +246,6 @@ class PictureServiceTest {
             // then
             assertThat(throwable)
                     .isInstanceOf(AlbumDoesNotHaveSlotException.class)
-                    .hasMessage(ErrorCode.ALBUM_DOES_NOT_HAVE_SLOT.getMessage())
                     .hasNoCause();
         }
 
@@ -296,7 +287,7 @@ class PictureServiceTest {
                 builder.setNull("deletedAt");
             });
 
-            when(slotQueryRepositoryImpl.findById(slotId)).thenReturn(Optional.of(slot));
+            when(slotQueryRepository.findById(slotId)).thenReturn(Optional.of(slot));
 
             when(pictureTagQueryRepository.findByNames(tags)).thenReturn(
                     List.of(

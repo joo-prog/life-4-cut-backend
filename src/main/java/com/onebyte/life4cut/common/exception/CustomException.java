@@ -12,9 +12,4 @@ public class CustomException extends RuntimeException{
     super(errorCode.getMessage());
     status = errorCode.getStatus();
   }
-
-  public CustomException(ErrorCode errorCode, Throwable throwable) {
-    super(errorCode.getMessage(), throwable);
-    status = errorCode.getStatus();
-  }
 }

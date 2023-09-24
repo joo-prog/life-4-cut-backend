@@ -10,9 +10,7 @@ import com.onebyte.life4cut.album.exception.UserAlbumRolePermissionException;
 import com.onebyte.life4cut.album.repository.AlbumQueryRepository;
 import com.onebyte.life4cut.album.repository.SlotQueryRepository;
 import com.onebyte.life4cut.album.repository.UserAlbumQueryRepository;
-import com.onebyte.life4cut.album.repository.UserAlbumQueryRepositoryImpl;
 import com.onebyte.life4cut.common.constants.S3Env;
-import com.onebyte.life4cut.common.exception.ErrorCode;
 import com.onebyte.life4cut.picture.domain.Picture;
 import com.onebyte.life4cut.picture.domain.PictureTag;
 import com.onebyte.life4cut.picture.domain.PictureTagRelation;
@@ -67,15 +65,15 @@ public class PictureService {
 
     @Transactional
     public Long createInSlot(@Nonnull Long authorId, @Nonnull Long albumId, @Nonnull Long slotId, @Nonnull String content, @Nonnull LocalDateTime picturedAt, @Nonnull List<String> tags, @Nonnull MultipartFile image) {
-        Album album = albumQueryRepository.findById(albumId).orElseThrow(() -> new AlbumNotFoundException(ErrorCode.ALBUM_NOT_FOUND));
-        UserAlbum userAlbum = userAlbumQueryRepository.findByUserIdAndAlbumId(authorId, albumId).orElseThrow(() -> new UserAlbumRolePermissionException(ErrorCode.USER_ALBUM_ROLE_PERMISSION));
+        Album album = albumQueryRepository.findById(albumId).orElseThrow(AlbumNotFoundException::new);
+        UserAlbum userAlbum = userAlbumQueryRepository.findByUserIdAndAlbumId(authorId, albumId).orElseThrow(UserAlbumRolePermissionException::new);
         if (userAlbum.isGuest()) {
-            throw new UserAlbumRolePermissionException(ErrorCode.USER_ALBUM_ROLE_PERMISSION);
+            throw new UserAlbumRolePermissionException();
         }
 
-        Slot slot = slotQueryRepository.findById(slotId).orElseThrow(() -> new SlotNotFoundException(ErrorCode.SLOT_NOT_FOUND));
+        Slot slot = slotQueryRepository.findById(slotId).orElseThrow(SlotNotFoundException::new);
         if (!slot.isIn(album)) {
-            throw new AlbumDoesNotHaveSlotException(ErrorCode.ALBUM_DOES_NOT_HAVE_SLOT);
+            throw new AlbumDoesNotHaveSlotException();
         }
 
         List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(tags);
