@@ -36,7 +36,7 @@ public class User extends BaseEntity {
   private String nickname;
 
   @Column(length = 255)
-  private String profile_path;
+  private String profilePath;
 
   private String email;
 
