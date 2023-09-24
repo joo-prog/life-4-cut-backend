@@ -28,6 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.MimeTypeUtils;
@@ -171,7 +172,7 @@ class PictureServiceTest {
             String content = "content";
             LocalDateTime picturedAt = LocalDateTime.of(2023, 9, 23, 1, 1, 1);
             List<String> tags = List.of("tag1", "tag2");
-            MultipartFile image = new MockMultipartFile("image.png", "original-name.png", MimeTypeUtils.IMAGE_PNG_VALUE, "test".getBytes());
+            MultipartFile image = new MockMultipartFile("image.png", "original-name.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
             when(albumQueryRepository.findById(albumId)).thenReturn(Optional.of(
                     albumFixtureFactory.make(
