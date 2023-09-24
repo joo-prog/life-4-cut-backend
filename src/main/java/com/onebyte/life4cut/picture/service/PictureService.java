@@ -78,11 +78,11 @@ public class PictureService {
             throw new AlbumDoesNotHaveSlotException(ErrorCode.ALBUM_DOES_NOT_HAVE_SLOT);
         }
 
-        FileUploadResponse response = fileUploader.upload(MultipartFileUploadRequest.of(image, s3Env.bucket()));
-
         List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(tags);
         List<PictureTag> newPictureTags = tags.stream().filter(tag -> pictureTags.stream().noneMatch(pictureTag -> pictureTag.getName().getValue().equals(tag)))
                 .map(tag -> PictureTag.create(albumId, authorId, tag)).toList();
+
+        FileUploadResponse response = fileUploader.upload(MultipartFileUploadRequest.of(image, s3Env.bucket()));
 
         Picture picture = Picture.create(authorId, albumId, response.key(), content, picturedAt);
 

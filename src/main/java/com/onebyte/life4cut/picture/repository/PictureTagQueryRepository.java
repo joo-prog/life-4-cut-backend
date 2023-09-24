@@ -21,7 +21,7 @@ public class PictureTagQueryRepository {
         return query
                 .selectFrom(pictureTag)
                 .where(
-                        pictureTag.name.in(names),
+                        pictureTag.name.value.in(names),
                         pictureTag.deletedAt.isNull()
                 ).fetch();
     }
