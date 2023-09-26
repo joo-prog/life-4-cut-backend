@@ -19,8 +19,10 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.onebyte.life4cut.common.annotation.WithCustomMockUser;
 import com.onebyte.life4cut.common.controller.ControllerTest;
+import com.onebyte.life4cut.common.exception.ErrorCode;
 import com.onebyte.life4cut.user.controller.dto.UserFindResponse;
 import com.onebyte.life4cut.user.domain.User;
+import com.onebyte.life4cut.user.exception.UserNotFound;
 import com.onebyte.life4cut.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +34,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest({UserController.class})
 class UserControllerTest extends ControllerTest {
 
   @MockBean
@@ -87,6 +89,42 @@ class UserControllerTest extends ControllerTest {
                             fieldWithPath("data.email").type(STRING).description("유저 이메일"),
                             fieldWithPath("data.profilePath").type(STRING)
                                 .description("유저 프로필 사진 파일 경로")
+                        )
+                        .build()
+                )
+            )
+        )
+        .andDo(print());
+  }
+
+  @WithMockUser
+  @DisplayName("존재하지 않는 유저 조회")
+  @Test
+  void findUserUnAuthorized() throws Exception {
+    // given
+    String nickname = "bell";
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("nickname", nickname);
+
+    // when
+    Mockito.when(userService.findUserByNickname(nickname)).thenThrow(new UserNotFound());
+
+    // then
+    ResultActions actions = performGet(baseUri, params);
+    actions.andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value(ErrorCode.USER_NOT_FOUND.getMessage()))
+        .andDo(
+            MockMvcRestDocumentationWrapper.document(
+                "{class_name}/{method_name}",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("닉네임으로 유저 조회 API 실패")
+                        .requestFields()
+                        .responseFields(
+                            fieldWithPath("message").type(STRING).description("응답 메시지"),
+                            fieldWithPath("data").type(OBJECT).description("데이터")
                         )
                         .build()
                 )
