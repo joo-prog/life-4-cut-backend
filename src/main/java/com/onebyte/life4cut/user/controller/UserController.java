@@ -2,9 +2,11 @@ package com.onebyte.life4cut.user.controller;
 
 import com.onebyte.life4cut.auth.dto.CustomUserDetails;
 import com.onebyte.life4cut.common.web.ApiResponse;
+import com.onebyte.life4cut.user.controller.dto.UserDuplicateResponse;
 import com.onebyte.life4cut.user.controller.dto.UserFindResponse;
 import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.service.UserService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,14 @@ public class UserController {
     User result = userService.findUser(user.getUserId());
     return ApiResponse.OK(
         UserFindResponse.of(result)
+    );
+  }
+
+  @GetMapping("/duplicate")
+  public ApiResponse<UserDuplicateResponse> checkDuplicatedNickname(@RequestParam("nickname") String nickname) {
+    Optional<User> result = userService.findUserByNicknameForCheckingDuplication(nickname);
+    return ApiResponse.OK(
+        UserDuplicateResponse.of(result)
     );
   }
 }
