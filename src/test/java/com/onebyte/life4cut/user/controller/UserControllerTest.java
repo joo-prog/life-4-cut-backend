@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -20,10 +21,12 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.onebyte.life4cut.common.annotation.WithCustomMockUser;
 import com.onebyte.life4cut.common.controller.ControllerTest;
 import com.onebyte.life4cut.common.exception.ErrorCode;
+import com.onebyte.life4cut.user.controller.dto.UserDuplicateResponse;
 import com.onebyte.life4cut.user.controller.dto.UserFindResponse;
 import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.exception.UserNotFound;
 import com.onebyte.life4cut.user.service.UserService;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -175,7 +178,59 @@ class UserControllerTest extends ControllerTest {
                             fieldWithPath("data.userId").type(NUMBER).description("유저 ID"),
                             fieldWithPath("data.nickname").type(STRING).description("유저 닉네임"),
                             fieldWithPath("data.email").type(STRING).description("유저 이메일"),
-                            fieldWithPath("data.profilePath").type(STRING).description("유저 프로필 사진 파일 경로")
+                            fieldWithPath("data.profilePath").type(STRING)
+                                .description("유저 프로필 사진 파일 경로")
+                        )
+                        .build()
+                )
+            )
+        )
+        .andDo(print());
+  }
+
+  @WithMockUser
+  @DisplayName("존재하는 유저 닉네임인지 확인하면 중복된다는 정보를 받는다.")
+  @Test
+  void checkDuplicatedNickname() throws Exception {
+    // given
+    String nickname = "bell";
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("nickname", nickname);
+
+    Optional<User> user = Optional.of(User.builder()
+        .id(1L)
+        .nickname(nickname)
+        .oauthId("12345")
+        .oauthType("kakao")
+        .profilePath("profilePath")
+        .email("bell@gmail.com")
+        .build());
+    UserDuplicateResponse result = UserDuplicateResponse.of(user);
+
+    // when
+    Mockito.when(userService.findUserByNicknameForCheckingDuplication(nickname)).thenReturn(user);
+
+    // then
+    ResultActions actions = performGet(baseUri + "/duplicate", params);
+    actions.andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data", equalTo(asParsedJson(result))))
+        .andDo(
+            MockMvcRestDocumentationWrapper.document(
+                "{class_name}/{method_name}",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("닉네임으로 유저 조회 API")
+                        .queryParameters(
+                            parameterWithName("nickname").description("유저 닉네임")
+                        )
+                        .requestFields()
+                        .responseFields(
+                            fieldWithPath("message").type(STRING).description("응답 메시지"),
+                            fieldWithPath("data.isDuplicated").type(BOOLEAN).description("유저 ID")
+                                .description("유저 프로필 사진 파일 경로")
                         )
                         .build()
                 )
