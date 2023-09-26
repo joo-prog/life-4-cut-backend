@@ -1,6 +1,7 @@
 package com.onebyte.life4cut.user.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
@@ -13,7 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.onebyte.life4cut.common.ControllerTest;
+import com.onebyte.life4cut.common.annotation.WithCustomMockUser;
+import com.onebyte.life4cut.common.controller.ControllerTest;
 import com.onebyte.life4cut.config.TestSecurityConfiguration;
 import com.onebyte.life4cut.user.controller.dto.UserFindResponse;
 import com.onebyte.life4cut.user.domain.User;
@@ -44,7 +46,7 @@ class UserControllerTest extends ControllerTest {
   private static final String baseUri = "/api/v1/users";
 
   @WithMockUser
-  @DisplayName("findUser")
+  @DisplayName("고유한 유저 닉네임으로 유저를 조회한다.")
   @Test
   void findUser() throws Exception {
     // given
@@ -76,6 +78,46 @@ class UserControllerTest extends ControllerTest {
                 queryParameters(
                     parameterWithName("nickname").description("유저 닉네임")
                 ),
+                responseFields(
+                    fieldWithPath("message").type(STRING).description("응답 메시지"),
+                    fieldWithPath("data").type(OBJECT).description("데이터"),
+                    fieldWithPath("data.userId").type(NUMBER).description("유저 ID"),
+                    fieldWithPath("data.nickname").type(STRING).description("유저 닉네임"),
+                    fieldWithPath("data.email").type(STRING).description("유저 이메일"),
+                    fieldWithPath("data.profilePath").type(STRING).description("유저 프로필 사진 파일 경로")
+                )
+            )
+        )
+        .andDo(print());
+  }
+
+  @WithCustomMockUser
+  @DisplayName("@AuthenticationPrincipal을 통해 본인을 조회한다.")
+  @Test
+  void findMe() throws Exception {
+    // given
+    String nickname = "bell";
+    User user = User.builder()
+        .id(1L)
+        .nickname(nickname)
+        .oauthId("12345")
+        .oauthType("kakao")
+        .profilePath("profilePath")
+        .email("bell@gmail.com")
+        .build();
+    UserFindResponse result = UserFindResponse.of(user);
+
+    // when
+    Mockito.when(userService.findUser(anyLong())).thenReturn(user);
+
+    // then
+    ResultActions actions = performGet(baseUri + "/me");
+    actions.andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data", equalTo(asParsedJson(result))))
+        .andDo(
+            document(
+                "{class_name}/{method_name}",
                 responseFields(
                     fieldWithPath("message").type(STRING).description("응답 메시지"),
                     fieldWithPath("data").type(OBJECT).description("데이터"),

@@ -10,6 +10,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,18 +38,20 @@ public class TokenProvider implements InitializingBean {
   private final String secret;
   private final long expires;
   private final long refreshExpires;
+  private final long cookieExpires;
   private Key key;
 
   public TokenProvider(
       RedisTemplate<String, String> redisTemplate,
       @Value("${auth.jwt.secret}") String secret,
-      @Value("${auth.jwt.expires}") long expires,
-      @Value("${auth.jwt.refresh-expires}") long refreshExpires
+      @Value("${auth.jwt.expires}") Duration expires,
+      @Value("${auth.jwt.refresh-expires}") Duration refreshExpires
   ) {
     this.redisTemplate = redisTemplate;
     this.secret = secret;
-    this.expires = expires * 60 * 60 * 1000;
-    this.refreshExpires = refreshExpires * 60 * 60 * 1000;
+    this.expires = expires.toMillis();
+    this.refreshExpires = refreshExpires.toMillis();
+    this.cookieExpires = refreshExpires.toSeconds();
   }
 
   @Override
@@ -147,7 +150,7 @@ public class TokenProvider implements InitializingBean {
     return ResponseCookie.from(name, token)
         .httpOnly(true)
         .secure(true)
-        .maxAge(14 * 24 * 60 * 60 * 1000)
+        .maxAge(cookieExpires)
         .path("/")
         .build();
   }
