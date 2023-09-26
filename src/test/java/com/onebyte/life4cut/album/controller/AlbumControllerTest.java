@@ -3,7 +3,7 @@ package com.onebyte.life4cut.album.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onebyte.life4cut.album.controller.dto.CreatePictureRequest;
 import com.onebyte.life4cut.annotation.ControllerTest;
-import com.onebyte.life4cut.annotation.WithCustomMockUser;
+import com.onebyte.life4cut.common.annotation.WithCustomMockUser;
 import com.onebyte.life4cut.picture.service.PictureService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
