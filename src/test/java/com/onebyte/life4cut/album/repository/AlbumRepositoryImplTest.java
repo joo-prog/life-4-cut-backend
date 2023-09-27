@@ -1,6 +1,7 @@
 package com.onebyte.life4cut.album.repository;
 
 import com.onebyte.life4cut.album.domain.Album;
+import com.onebyte.life4cut.common.annotation.RepositoryTest;
 import com.onebyte.life4cut.fixture.AlbumFixtureFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -16,8 +17,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableJpaAuditing
-@DataJpaTest
+@RepositoryTest
 class AlbumRepositoryImplTest {
 
     private final AlbumFixtureFactory albumFixtureFactory;
