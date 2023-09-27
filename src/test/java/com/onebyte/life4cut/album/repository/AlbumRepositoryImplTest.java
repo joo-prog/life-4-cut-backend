@@ -18,16 +18,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableJpaAuditing
 @DataJpaTest
-class AlbumQueryRepositoryImplTest {
+class AlbumRepositoryImplTest {
 
     private final AlbumFixtureFactory albumFixtureFactory;
 
-    private final AlbumQueryRepositoryImpl albumQueryRepositoryImpl;
+    private final AlbumRepositoryImpl albumQueryRepositoryImpl;
 
     @Autowired
-    public AlbumQueryRepositoryImplTest(EntityManager entityManager) {
+    public AlbumRepositoryImplTest(EntityManager entityManager) {
         this.albumFixtureFactory = new AlbumFixtureFactory(entityManager);
-        this.albumQueryRepositoryImpl = new AlbumQueryRepositoryImpl(new JPAQueryFactory(entityManager));
+        this.albumQueryRepositoryImpl = new AlbumRepositoryImpl(new JPAQueryFactory(entityManager));
     }
 
     @Nested

@@ -9,10 +9,10 @@ import java.util.Optional;
 import static com.onebyte.life4cut.album.domain.QUserAlbum.userAlbum;
 
 @Repository
-public class UserAlbumQueryRepositoryImpl implements UserAlbumQueryRepository{
+public class UserAlbumRepositoryImpl implements UserAlbumRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    public UserAlbumQueryRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+    public UserAlbumRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 

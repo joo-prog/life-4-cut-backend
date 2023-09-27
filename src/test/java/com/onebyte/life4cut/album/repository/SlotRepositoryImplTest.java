@@ -18,16 +18,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @EnableJpaAuditing
-class SlotQueryRepositoryImplTest {
+class SlotRepositoryImplTest {
 
     private final SlotFixtureFactory slotFixtureFactory;
 
-    private final SlotQueryRepositoryImpl slotQueryRepositoryImpl;
+    private final SlotRepositoryImpl slotQueryRepositoryImpl;
 
     @Autowired
-    public SlotQueryRepositoryImplTest(EntityManager entityManager) {
+    public SlotRepositoryImplTest(EntityManager entityManager) {
         this.slotFixtureFactory = new SlotFixtureFactory(entityManager);
-        this.slotQueryRepositoryImpl = new SlotQueryRepositoryImpl(new JPAQueryFactory(entityManager));
+        this.slotQueryRepositoryImpl = new SlotRepositoryImpl(new JPAQueryFactory(entityManager));
     }
 
 

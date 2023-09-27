@@ -4,7 +4,7 @@ import com.onebyte.life4cut.album.domain.Slot;
 
 import java.util.Optional;
 
-public interface SlotQueryRepository {
+public interface SlotRepository {
 
     Optional<Slot> findById(Long id);
 }

@@ -9,11 +9,11 @@ import java.util.Optional;
 import static com.onebyte.life4cut.album.domain.QSlot.slot;
 
 @Repository
-public class SlotQueryRepositoryImpl implements SlotQueryRepository{
+public class SlotRepositoryImpl implements SlotRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public SlotQueryRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+    public SlotRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 

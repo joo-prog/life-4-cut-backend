@@ -7,15 +7,14 @@ import com.onebyte.life4cut.album.exception.AlbumDoesNotHaveSlotException;
 import com.onebyte.life4cut.album.exception.AlbumNotFoundException;
 import com.onebyte.life4cut.album.exception.SlotNotFoundException;
 import com.onebyte.life4cut.album.exception.UserAlbumRolePermissionException;
-import com.onebyte.life4cut.album.repository.AlbumQueryRepository;
-import com.onebyte.life4cut.album.repository.SlotQueryRepository;
-import com.onebyte.life4cut.album.repository.UserAlbumQueryRepository;
+import com.onebyte.life4cut.album.repository.AlbumRepository;
+import com.onebyte.life4cut.album.repository.SlotRepository;
+import com.onebyte.life4cut.album.repository.UserAlbumRepository;
 import com.onebyte.life4cut.common.constants.S3Env;
 import com.onebyte.life4cut.picture.domain.Picture;
 import com.onebyte.life4cut.picture.domain.PictureTag;
 import com.onebyte.life4cut.picture.domain.PictureTagRelation;
 import com.onebyte.life4cut.picture.repository.PictureRepository;
-import com.onebyte.life4cut.picture.repository.PictureTagQueryRepository;
 import com.onebyte.life4cut.picture.repository.PictureTagRelationRepository;
 import com.onebyte.life4cut.picture.repository.PictureTagRepository;
 import com.onebyte.life4cut.support.fileUpload.FileUploadResponse;
@@ -34,10 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PictureService {
 
-    private final SlotQueryRepository slotQueryRepository;
-    private final AlbumQueryRepository albumQueryRepository;
-    private final UserAlbumQueryRepository userAlbumQueryRepository;
-    private final PictureTagQueryRepository pictureTagQueryRepository;
+    private final SlotRepository slotRepository;
+    private final AlbumRepository albumRepository;
+    private final UserAlbumRepository userAlbumRepository;
     private final PictureTagRepository pictureTagRepository;
     private final PictureTagRelationRepository pictureTagRelationRepository;
     private final PictureRepository pictureRepository;
@@ -49,20 +47,20 @@ public class PictureService {
     public Long createInSlot(@Nonnull Long authorId, @Nonnull Long albumId, @Nonnull Long slotId,
         @Nonnull String content, @Nonnull LocalDateTime picturedAt, @Nonnull List<String> tags,
         @Nonnull MultipartFile image) {
-        Album album = albumQueryRepository.findById(albumId)
+        Album album = albumRepository.findById(albumId)
             .orElseThrow(AlbumNotFoundException::new);
-        UserAlbum userAlbum = userAlbumQueryRepository.findByUserIdAndAlbumId(authorId, albumId)
+        UserAlbum userAlbum = userAlbumRepository.findByUserIdAndAlbumId(authorId, albumId)
             .orElseThrow(UserAlbumRolePermissionException::new);
         if (userAlbum.isGuest()) {
             throw new UserAlbumRolePermissionException();
         }
 
-        Slot slot = slotQueryRepository.findById(slotId).orElseThrow(SlotNotFoundException::new);
+        Slot slot = slotRepository.findById(slotId).orElseThrow(SlotNotFoundException::new);
         if (!slot.isIn(album)) {
             throw new AlbumDoesNotHaveSlotException();
         }
 
-        List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(albumId, tags);
+        List<PictureTag> pictureTags = pictureTagRepository.findByNames(albumId, tags);
         List<PictureTag> newPictureTags = tags.stream().filter(tag -> pictureTags.stream()
                 .noneMatch(pictureTag -> pictureTag.getName().getValue().equals(tag)))
             .map(tag -> PictureTag.create(albumId, authorId, tag)).toList();
