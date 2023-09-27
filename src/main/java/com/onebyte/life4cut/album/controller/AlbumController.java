@@ -7,6 +7,7 @@ import com.onebyte.life4cut.common.web.ApiResponse;
 import com.onebyte.life4cut.picture.service.PictureService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/albums")
+@RequiredArgsConstructor
 public class AlbumController {
 
     private final PictureService pictureService;
-
-    public AlbumController(PictureService pictureService) {
-        this.pictureService = pictureService;
-    }
 
     @PostMapping("/{albumId}/pictures")
     public ApiResponse<CreatePictureResponse> uploadPicture(

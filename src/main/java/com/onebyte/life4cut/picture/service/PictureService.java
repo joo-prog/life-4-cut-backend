@@ -23,50 +23,36 @@ import com.onebyte.life4cut.support.fileUpload.FileUploader;
 import com.onebyte.life4cut.support.fileUpload.MultipartFileUploadRequest;
 import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class PictureService {
 
     private final SlotQueryRepository slotQueryRepository;
-
     private final AlbumQueryRepository albumQueryRepository;
-
     private final UserAlbumQueryRepository userAlbumQueryRepository;
-
     private final PictureTagQueryRepository pictureTagQueryRepository;
-
     private final PictureTagRepository pictureTagRepository;
-
     private final PictureTagRelationRepository pictureTagRelationRepository;
-
     private final PictureRepository pictureRepository;
-
     private final FileUploader fileUploader;
-
     private final S3Env s3Env;
 
-    public PictureService(SlotQueryRepository slotQueryRepository, AlbumQueryRepository albumQueryRepository, UserAlbumQueryRepository userAlbumQueryRepository, PictureTagQueryRepository pictureTagQueryRepository, PictureTagRepository pictureTagRepository, PictureTagRelationRepository pictureTagRelationRepository, PictureRepository pictureRepository, FileUploader fileUploader, S3Env s3Env) {
-        this.slotQueryRepository = slotQueryRepository;
-        this.albumQueryRepository = albumQueryRepository;
-        this.userAlbumQueryRepository = userAlbumQueryRepository;
-        this.pictureTagQueryRepository = pictureTagQueryRepository;
-        this.pictureTagRepository = pictureTagRepository;
-        this.pictureTagRelationRepository = pictureTagRelationRepository;
-        this.pictureRepository = pictureRepository;
-        this.fileUploader = fileUploader;
-        this.s3Env = s3Env;
-    }
 
     @Transactional
-    public Long createInSlot(@Nonnull Long authorId, @Nonnull Long albumId, @Nonnull Long slotId, @Nonnull String content, @Nonnull LocalDateTime picturedAt, @Nonnull List<String> tags, @Nonnull MultipartFile image) {
-        Album album = albumQueryRepository.findById(albumId).orElseThrow(AlbumNotFoundException::new);
-        UserAlbum userAlbum = userAlbumQueryRepository.findByUserIdAndAlbumId(authorId, albumId).orElseThrow(UserAlbumRolePermissionException::new);
+    public Long createInSlot(@Nonnull Long authorId, @Nonnull Long albumId, @Nonnull Long slotId,
+        @Nonnull String content, @Nonnull LocalDateTime picturedAt, @Nonnull List<String> tags,
+        @Nonnull MultipartFile image) {
+        Album album = albumQueryRepository.findById(albumId)
+            .orElseThrow(AlbumNotFoundException::new);
+        UserAlbum userAlbum = userAlbumQueryRepository.findByUserIdAndAlbumId(authorId, albumId)
+            .orElseThrow(UserAlbumRolePermissionException::new);
         if (userAlbum.isGuest()) {
             throw new UserAlbumRolePermissionException();
         }
@@ -77,10 +63,12 @@ public class PictureService {
         }
 
         List<PictureTag> pictureTags = pictureTagQueryRepository.findByNames(albumId, tags);
-        List<PictureTag> newPictureTags = tags.stream().filter(tag -> pictureTags.stream().noneMatch(pictureTag -> pictureTag.getName().getValue().equals(tag)))
-                .map(tag -> PictureTag.create(albumId, authorId, tag)).toList();
+        List<PictureTag> newPictureTags = tags.stream().filter(tag -> pictureTags.stream()
+                .noneMatch(pictureTag -> pictureTag.getName().getValue().equals(tag)))
+            .map(tag -> PictureTag.create(albumId, authorId, tag)).toList();
 
-        FileUploadResponse response = fileUploader.upload(MultipartFileUploadRequest.of(image, s3Env.bucket()));
+        FileUploadResponse response = fileUploader.upload(
+            MultipartFileUploadRequest.of(image, s3Env.bucket()));
 
         Picture picture = Picture.create(authorId, albumId, response.key(), content, picturedAt);
 
@@ -90,9 +78,11 @@ public class PictureService {
         pictureTagRepository.saveAll(newPictureTags);
         pictureTags.forEach(PictureTag::restoreIfRequired);
 
-        List<PictureTagRelation> newPictureTagRelations = Stream.concat(pictureTags.stream(), newPictureTags.stream()).map(pictureTag -> PictureTagRelation.create(picture.getId(), albumId, pictureTag.getId())).toList();
+        List<PictureTagRelation> newPictureTagRelations = Stream.concat(pictureTags.stream(),
+                newPictureTags.stream()).map(
+                pictureTag -> PictureTagRelation.create(picture.getId(), albumId, pictureTag.getId()))
+            .toList();
         pictureTagRelationRepository.saveAll(newPictureTagRelations);
-
 
         return picture.getId();
     }
