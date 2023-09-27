@@ -7,11 +7,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @DataJpaTest
-@ImportAutoConfiguration({JpaConfiguration.class})
+@Import({JpaConfiguration.class})
+@ComponentScan(basePackages = "com.onebyte.life4cut.fixture")
 public @interface RepositoryTest {
 
+    @AliasFor(annotation = Import.class, attribute = "value")
+    Class<?>[] value() default {};
 }

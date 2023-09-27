@@ -7,13 +7,17 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestComponent;
 
+@TestComponent
 public class AlbumFixtureFactory extends DefaultFixtureFactory<Album> {
 
 
     public AlbumFixtureFactory() {
     }
 
+    @Autowired
     public AlbumFixtureFactory(EntityManager entityManager) {
         super(entityManager);
     }

@@ -17,18 +17,15 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@RepositoryTest
+@RepositoryTest(SlotRepositoryImpl.class)
 class SlotRepositoryImplTest {
 
-    private final SlotFixtureFactory slotFixtureFactory;
-
-    private final SlotRepositoryImpl slotQueryRepositoryImpl;
+    @Autowired
+    private SlotFixtureFactory slotFixtureFactory;
 
     @Autowired
-    public SlotRepositoryImplTest(EntityManager entityManager) {
-        this.slotFixtureFactory = new SlotFixtureFactory(entityManager);
-        this.slotQueryRepositoryImpl = new SlotRepositoryImpl(new JPAQueryFactory(entityManager));
-    }
+    private SlotRepositoryImpl slotQueryRepositoryImpl;
+
 
 
     @Nested

@@ -6,13 +6,18 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestComponent;
+import org.springframework.core.annotation.AliasFor;
 
+@TestComponent
 public class PictureTagFixtureFactory extends DefaultFixtureFactory<PictureTag> {
 
 
     public PictureTagFixtureFactory() {
     }
 
+    @Autowired
     public PictureTagFixtureFactory(EntityManager entityManager) {
         super(entityManager);
     }

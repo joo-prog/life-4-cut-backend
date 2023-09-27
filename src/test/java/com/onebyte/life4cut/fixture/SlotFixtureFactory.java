@@ -6,13 +6,17 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestComponent;
 
+@TestComponent
 public class SlotFixtureFactory extends DefaultFixtureFactory<Slot> {
 
 
     public SlotFixtureFactory() {
     }
 
+    @Autowired
     public SlotFixtureFactory(EntityManager entityManager) {
         super(entityManager);
     }

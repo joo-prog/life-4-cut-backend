@@ -6,26 +6,19 @@ import com.onebyte.life4cut.common.annotation.RepositoryTest;
 import com.onebyte.life4cut.fixture.PictureTagFixtureFactory;
 import com.onebyte.life4cut.picture.domain.PictureTag;
 import com.onebyte.life4cut.picture.domain.vo.PictureTagName;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@RepositoryTest
+@RepositoryTest(PictureTagRepositoryImpl.class)
 class PictureTagRepositoryImplTest {
 
-    private final PictureTagFixtureFactory pictureTagFixtureFactory;
-    private final PictureTagRepository pictureTagRepository;
-
     @Autowired
-    public PictureTagRepositoryImplTest(EntityManager entityManager, JPAQueryFactory query) {
-        this.pictureTagFixtureFactory = new PictureTagFixtureFactory(entityManager);
-        this.pictureTagRepository = new PictureTagRepositoryImpl(entityManager, query);
-    }
-
+    private PictureTagFixtureFactory pictureTagFixtureFactory;
+    @Autowired
+    private PictureTagRepositoryImpl pictureTagRepositoryImpl;
 
     @Nested
     class Search {
@@ -50,7 +43,7 @@ class PictureTagRepositoryImplTest {
             });
 
             // when
-            var results = pictureTagRepository.search(albumId, keyword);
+            var results = pictureTagRepositoryImpl.search(albumId, keyword);
 
             // then
             assertThat(results).hasSize(1);
@@ -77,7 +70,7 @@ class PictureTagRepositoryImplTest {
             });
 
             // when
-            var results = pictureTagRepository.search(albumId, keyword);
+            var results = pictureTagRepositoryImpl.search(albumId, keyword);
 
             // then
             assertThat(results).hasSize(1);
@@ -104,7 +97,7 @@ class PictureTagRepositoryImplTest {
             });
 
             // when
-            var results = pictureTagRepository.search(albumId, keyword);
+            var results = pictureTagRepositoryImpl.search(albumId, keyword);
 
             // then
             assertThat(results).hasSize(1);
