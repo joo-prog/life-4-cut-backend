@@ -1,8 +1,114 @@
 package com.onebyte.life4cut.pictureTag.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.onebyte.life4cut.common.annotation.RepositoryTest;
+import com.onebyte.life4cut.fixture.PictureTagFixtureFactory;
+import com.onebyte.life4cut.picture.domain.PictureTag;
+import com.onebyte.life4cut.picture.domain.vo.PictureTagName;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RepositoryTest
 class PictureTagRepositoryImplTest {
 
+    private final PictureTagFixtureFactory pictureTagFixtureFactory;
+    private final PictureTagRepository pictureTagRepository;
+
+    @Autowired
+    public PictureTagRepositoryImplTest(EntityManager entityManager, JPAQueryFactory query) {
+        this.pictureTagFixtureFactory = new PictureTagFixtureFactory(entityManager);
+        this.pictureTagRepository = new PictureTagRepositoryImpl(entityManager, query);
+    }
+
+
+    @Nested
+    class Search {
+
+        @Test
+        @DisplayName("검색어가 포함된 태그를 조회한다.")
+        void searchByKeyword() {
+            // given
+            String keyword = "bell";
+            Long albumId = 1L;
+
+            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+            });
+
+            pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("not include keyword"));
+                builder.setNull("deletedAt");
+            });
+
+            // when
+            var results = pictureTagRepository.search(albumId, keyword);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0)).isEqualTo(expectedTag);
+        }
+
+        @Test
+        @DisplayName("삭제된 태그는 조회하지 않는다")
+        void notSearchDeletedTag() {
+            // given
+            String keyword = "bell";
+            Long albumId = 1L;
+
+            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+            });
+
+            pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park2 bell park"));
+                builder.set("deletedAt", LocalDateTime.now());
+            });
+
+            // when
+            var results = pictureTagRepository.search(albumId, keyword);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0)).isEqualTo(expectedTag);
+        }
+
+        @Test
+        @DisplayName("앨범내에 존재하는 태그만 조회한다")
+        void searchInAlbum() {
+            // given
+            String keyword = "bell";
+            Long albumId = 1L;
+
+            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+            });
+
+            pictureTagFixtureFactory.save((entity, builder) -> {
+                builder.set("albumId", albumId + 1);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+            });
+
+            // when
+            var results = pictureTagRepository.search(albumId, keyword);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0)).isEqualTo(expectedTag);
+        }
+    }
 }
