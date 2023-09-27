@@ -1,4 +1,4 @@
-package com.onebyte.life4cut.picture.repository;
+package com.onebyte.life4cut.pictureTag.repository;
 
 import com.onebyte.life4cut.picture.domain.PictureTag;
 import java.util.List;

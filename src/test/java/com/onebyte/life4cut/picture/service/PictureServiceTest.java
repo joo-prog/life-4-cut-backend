@@ -28,7 +28,7 @@ import com.onebyte.life4cut.picture.domain.PictureTagRelation;
 import com.onebyte.life4cut.picture.domain.vo.PictureTagName;
 import com.onebyte.life4cut.picture.repository.PictureRepository;
 import com.onebyte.life4cut.picture.repository.PictureTagRelationRepository;
-import com.onebyte.life4cut.picture.repository.PictureTagRepository;
+import com.onebyte.life4cut.pictureTag.repository.PictureTagRepository;
 import com.onebyte.life4cut.support.fileUpload.FileUploadResponse;
 import com.onebyte.life4cut.support.fileUpload.FileUploader;
 import java.time.LocalDateTime;
