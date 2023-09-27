@@ -1,6 +1,5 @@
 package com.onebyte.life4cut.pictureTag.service;
 
-import com.onebyte.life4cut.album.domain.UserAlbum;
 import com.onebyte.life4cut.album.exception.UserAlbumRolePermissionException;
 import com.onebyte.life4cut.album.repository.UserAlbumRepository;
 import com.onebyte.life4cut.picture.domain.PictureTag;
@@ -18,7 +17,7 @@ public class PictureTagService {
 
     public List<PictureTag> searchTags(final Long albumId, final Long userId,
         final String keyword) {
-        UserAlbum userAlbum = userAlbumRepository.findByUserIdAndAlbumId(userId, albumId)
+        userAlbumRepository.findByUserIdAndAlbumId(userId, albumId)
             .orElseThrow(
                 UserAlbumRolePermissionException::new);
 
