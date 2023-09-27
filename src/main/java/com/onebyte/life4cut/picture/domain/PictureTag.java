@@ -9,12 +9,10 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -26,6 +24,7 @@ import java.util.Objects;
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class PictureTag extends BaseEntity {
+
     @Nonnull
     @Column(nullable = false)
     private Long albumId;
@@ -43,7 +42,8 @@ public class PictureTag extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Nonnull
-    public static PictureTag create(@Nonnull Long albumId, @Nonnull Long authorId, @Nonnull String name) {
+    public static PictureTag create(@Nonnull final Long albumId, @Nonnull final Long authorId,
+        @Nonnull final String name) {
         PictureTag pictureTag = new PictureTag();
         pictureTag.albumId = albumId;
         pictureTag.authorId = authorId;
