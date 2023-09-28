@@ -89,7 +89,7 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<GenerateSwaggerUI> {
     dependsOn("openapi3")
-    delete(file("src/main/resources/static/docs/"))
+
     copy {
         from("$buildDir/resources/main/static/docs")
         into("src/main/resources/static/docs/")
@@ -119,12 +119,11 @@ tasks {
      */
     bootJar {
         dependsOn("openapi3")
-    }
 
-    register<Copy>("copySwaggerUI") {
-        dependsOn("generateSwaggerUI")
-        from("$buildDir/resources/static/docs")
-        into("src/main/resources/static/docs")
+        copy {
+            from("$buildDir/resources/static/docs")
+            into("src/main/resources/static/docs")
+        }
     }
 
     /**

@@ -76,7 +76,8 @@ class UserControllerTest extends ControllerTest {
                 preprocessResponse(prettyPrint()),
                 resource(
                     ResourceSnippetParameters.builder()
-                        .description("닉네임으로 유저 조회 API")
+                        .tag("USER API")
+                        .description("닉네임 유저 조회 API")
                         .queryParameters(
                             parameterWithName("nickname").description("유저 닉네임")
                         )
@@ -120,7 +121,8 @@ class UserControllerTest extends ControllerTest {
                 preprocessResponse(prettyPrint()),
                 resource(
                     ResourceSnippetParameters.builder()
-                        .description("닉네임으로 유저 조회 API 실패")
+                        .tag("USER API")
+                        .description("닉네임 유저 조회 API")
                         .requestFields()
                         .responseFields(
                             fieldWithPath("message").type(STRING).description("응답 메시지"),
@@ -164,6 +166,7 @@ class UserControllerTest extends ControllerTest {
                 preprocessResponse(prettyPrint()),
                 resource(
                     ResourceSnippetParameters.builder()
+                        .tag("USER API")
                         .description("마이페이지 정보 조회 API")
                         .requestFields()
                         .responseFields(
