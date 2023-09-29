@@ -29,32 +29,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-@AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @ExtendWith({MockitoExtension.class, RestDocumentationExtension.class, SpringExtension.class})
 @ImportAutoConfiguration(TestSecurityConfiguration.class)
 public abstract class ControllerTest {
-
-//  private static long time = 1000000;
-//  private static String AUTHORITY_KEY = "auth";
-//  private static String USER_ID = "userId";
-//  private final String secretKey = "SnNvbldlYlRva2VuQXV0aGVudGljYXRpb25XaXRoU3ByaW5nQm9vdFRlc3RQcm9qZWN0U2VjcmV0S2V5";
 
   @Autowired
   protected MockMvc mockMvc;
 
   @Autowired
   protected ObjectMapper objectMapper;
-
-  @BeforeEach
-  void setUp(final WebApplicationContext context,
-      final RestDocumentationContextProvider restDocumentation) {
-    mockMvc = MockMvcBuilders.webAppContextSetup(context)
-        .apply(documentationConfiguration(restDocumentation))
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))
-        .alwaysDo(print())
-        .build();
-  }
 
   protected Object asParsedJson(Object obj) throws JsonProcessingException {
     String json = new ObjectMapper().writeValueAsString(obj);
@@ -101,17 +85,4 @@ public abstract class ControllerTest {
         .content(objectMapper.writeValueAsString(body))
     );
   }
-
-//  protected String generateToken(User user){
-//    Map<String, Object> payload = new HashMap<>();
-//    payload.put(USER_ID, user.getId());
-//    payload.put(AUTHORITY_KEY, AuthorityUtils.createAuthorityList("ADMIN"));
-//
-//    long now = System.currentTimeMillis();
-//    return Jwts.builder()
-//        .setClaims(payload)
-//        .setExpiration(new Date(now + time))
-//        .signWith(SignatureAlgorithm.HS512, secretKey)
-//        .compact();
-//  }
 }
