@@ -10,4 +10,6 @@ public interface PictureTagRepository {
     List<PictureTag> saveAll(Iterable<PictureTag> pictureTags);
 
     PictureTag save(PictureTag pictureTag);
+
+    List<PictureTag> search(Long albumId, String keyword);
 }

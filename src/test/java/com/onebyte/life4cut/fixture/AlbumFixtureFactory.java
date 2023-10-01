@@ -2,18 +2,20 @@ package com.onebyte.life4cut.fixture;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.onebyte.life4cut.album.domain.Album;
-import com.onebyte.life4cut.sample.domain.Sample;
 import jakarta.persistence.EntityManager;
-
 import java.util.List;
 import java.util.function.BiConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestComponent;
 
+@TestComponent
 public class AlbumFixtureFactory extends DefaultFixtureFactory<Album> {
 
 
     public AlbumFixtureFactory() {
     }
 
+    @Autowired
     public AlbumFixtureFactory(EntityManager entityManager) {
         super(entityManager);
     }

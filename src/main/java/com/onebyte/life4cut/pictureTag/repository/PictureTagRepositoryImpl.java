@@ -15,8 +15,8 @@ import static com.onebyte.life4cut.picture.domain.QPictureTag.pictureTag;
 @RequiredArgsConstructor
 public class PictureTagRepositoryImpl implements PictureTagRepository {
 
-    private final JPAQueryFactory query;
     private final EntityManager em;
+    private final JPAQueryFactory query;
 
     public List<PictureTag> findByNames(Long albumId, List<String> names) {
         return query
@@ -24,7 +24,6 @@ public class PictureTagRepositoryImpl implements PictureTagRepository {
             .where(
                 pictureTag.albumId.eq(albumId),
                 pictureTag.name.value.in(names)
-
             ).fetch();
     }
 
@@ -43,5 +42,15 @@ public class PictureTagRepositoryImpl implements PictureTagRepository {
     public PictureTag save(PictureTag pictureTag) {
         em.persist(pictureTag);
         return pictureTag;
+    }
+
+    @Override
+    public List<PictureTag> search(Long albumId, String keyword) {
+        return query.selectFrom(pictureTag)
+            .where(
+                pictureTag.albumId.eq(albumId),
+                pictureTag.name.value.contains(keyword),
+                pictureTag.deletedAt.isNull()
+            ).fetch();
     }
 }
