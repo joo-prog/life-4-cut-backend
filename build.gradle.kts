@@ -156,16 +156,31 @@ tasks {
 
 spotless {
     java {
-        targetExclude("**/generated/**")
+        ratchetFrom("origin/main")
+        targetExclude("$querydslDir/**")
         importOrder()
         removeUnusedImports()
         googleJavaFormat()
+        trimTrailingWhitespace()
         custom("no wildcard imports") {
             if (it.contains(".*;\n")) {
                 throw AssertionError("Do not use wildcard imports. 'spotlessApply' cannot resolve this issue. $it")
             }
 
             it
+        }
+    }
+}
+
+tasks.create("registerGitHooks") {
+    doLast {
+        val gitHooksDir = File(".git/hooks")
+        val githubHooksDir = File(".github/hooks")
+
+        githubHooksDir.listFiles()?.forEach { file ->
+            val targetFile = File(gitHooksDir, file.name)
+            file.copyTo(targetFile, overwrite = true)
+            targetFile.setExecutable(true)
         }
     }
 }
