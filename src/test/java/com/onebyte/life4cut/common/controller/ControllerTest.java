@@ -26,11 +26,9 @@ import org.springframework.util.MultiValueMap;
 @ImportAutoConfiguration(TestSecurityConfiguration.class)
 public abstract class ControllerTest {
 
-  @Autowired
-  protected MockMvc mockMvc;
+  @Autowired protected MockMvc mockMvc;
 
-  @Autowired
-  protected ObjectMapper objectMapper;
+  @Autowired protected ObjectMapper objectMapper;
 
   protected Object asParsedJson(Object obj) throws JsonProcessingException {
     String json = new ObjectMapper().writeValueAsString(obj);
@@ -38,43 +36,36 @@ public abstract class ControllerTest {
   }
 
   protected ResultActions performGet(String uri) throws Exception {
-    return mockMvc.perform(get(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-    );
+    return mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON));
   }
 
   protected ResultActions performGet(String uri, MultiValueMap<String, String> params)
       throws Exception {
-    return mockMvc.perform(get(uri)
-        .accept(MediaType.APPLICATION_JSON_VALUE)
-        .params(params)
-    );
+    return mockMvc.perform(get(uri).accept(MediaType.APPLICATION_JSON_VALUE).params(params));
   }
 
   protected ResultActions performPost(String uri) throws Exception {
-    return mockMvc.perform(post(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-    );
+    return mockMvc.perform(post(uri).contentType(MediaType.APPLICATION_JSON));
   }
 
   protected ResultActions performPost(String uri, Object body) throws Exception {
-    return mockMvc.perform(post(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-    );
+    return mockMvc.perform(
+        post(uri)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(body)));
   }
 
   protected ResultActions performPut(String uri, Object body) throws Exception {
-    return mockMvc.perform(put(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-    );
+    return mockMvc.perform(
+        put(uri)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(body)));
   }
 
   protected ResultActions performDelete(String uri, Object body) throws Exception {
-    return mockMvc.perform(delete(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-    );
+    return mockMvc.perform(
+        delete(uri)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(body)));
   }
 }

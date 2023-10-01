@@ -18,19 +18,16 @@ import lombok.experimental.SuperBuilder;
 @Table(
     name = "users",
     uniqueConstraints = {
-        @UniqueConstraint(
-            name = "unique_user_oauth_index",
-            columnNames = {
-                "oauthType",
-                "oauthId",
-            }
-        ),
-        @UniqueConstraint(
-            name = "unique_user_nickname_index",
-            columnNames = {"nickname"}
-        )
-    }
-)
+      @UniqueConstraint(
+          name = "unique_user_oauth_index",
+          columnNames = {
+            "oauthType",
+            "oauthId",
+          }),
+      @UniqueConstraint(
+          name = "unique_user_nickname_index",
+          columnNames = {"nickname"})
+    })
 public class User extends BaseEntity {
 
   @Column(unique = true, length = 30, nullable = false)
@@ -48,8 +45,7 @@ public class User extends BaseEntity {
   @Column(length = 100)
   private String oauthId;
 
-  @Column
-  private LocalDateTime deletedAt;
+  @Column private LocalDateTime deletedAt;
 
   public void deleteSoftly(LocalDateTime deletedAt) {
     this.deletedAt = deletedAt;

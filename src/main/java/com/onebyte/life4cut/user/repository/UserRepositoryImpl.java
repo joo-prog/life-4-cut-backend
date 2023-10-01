@@ -32,31 +32,24 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public Optional<User> findUser(long id) {
     String jpql = "select u from User u where u.id = :id";
-    List<User> userList = em.createQuery(jpql, User.class)
-        .setParameter("id", id)
-        .getResultList();
+    List<User> userList = em.createQuery(jpql, User.class).setParameter("id", id).getResultList();
     return userList.stream().findAny();
   }
 
   @Override
   public List<User> findUserByOAuthInfo(OAuthInfo oAuthInfo) {
-    return query.select(user)
+    return query
+        .select(user)
         .from(user)
         .where(
             user.oauthId.eq(oAuthInfo.getOauthId()),
-            user.oauthType.eq(oAuthInfo.getOauthType().getType())
-        )
+            user.oauthType.eq(oAuthInfo.getOauthType().getType()))
         .fetch();
   }
 
   @Override
   public Optional<User> findUserByNickname(String nickname) {
-    return query.select(user)
-        .from(user)
-        .where(
-            user.nickname.eq(nickname)
-        )
-        .fetch()
-        .stream().findAny();
+    return query.select(user).from(user).where(user.nickname.eq(nickname)).fetch().stream()
+        .findAny();
   }
 }

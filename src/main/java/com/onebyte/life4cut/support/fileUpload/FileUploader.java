@@ -4,6 +4,6 @@ import jakarta.annotation.Nonnull;
 
 public interface FileUploader {
 
-    @Nonnull
-    FileUploadResponse upload(@Nonnull FileUploadRequest fileUploadRequest);
+  @Nonnull
+  FileUploadResponse upload(@Nonnull FileUploadRequest fileUploadRequest);
 }

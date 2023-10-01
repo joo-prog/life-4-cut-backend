@@ -11,38 +11,36 @@ import org.springframework.boot.test.context.TestComponent;
 @TestComponent
 public class AlbumFixtureFactory extends DefaultFixtureFactory<Album> {
 
+  public AlbumFixtureFactory() {}
 
-    public AlbumFixtureFactory() {
-    }
+  @Autowired
+  public AlbumFixtureFactory(EntityManager entityManager) {
+    super(entityManager);
+  }
 
-    @Autowired
-    public AlbumFixtureFactory(EntityManager entityManager) {
-        super(entityManager);
-    }
+  public Album make(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
+    return getBuilder(builder).sample();
+  }
 
-    public Album make(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
-        return getBuilder(builder).sample();
-    }
+  public List<Album> makes(int count, BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
+    return getBuilder(builder).sampleList(count);
+  }
 
-    public List<Album> makes(int count, BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
-        return getBuilder(builder).sampleList(count);
-    }
+  public Album save(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
+    Album sample = getBuilder(builder).setNull("id").sample();
+    entityManager.persist(sample);
 
-    public Album save(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
-        Album sample = getBuilder(builder).setNull("id").sample();
-        entityManager.persist(sample);
+    return sample;
+  }
 
-        return sample;
-    }
+  public List<Album> saves(int count, BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
+    List<Album> samples = getBuilder(builder).setNull("id").sampleList(count);
+    samples.forEach(entityManager::persist);
 
-    public List<Album> saves(int count, BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
-        List<Album> samples = getBuilder(builder).setNull("id").sampleList(count);
-        samples.forEach(entityManager::persist);
+    return samples;
+  }
 
-        return samples;
-    }
-
-    private ArbitraryBuilder<Album> getBuilder(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
-        return fixtureMonkey.giveMeBuilder(Album.class).thenApply(builder);
-    }
+  private ArbitraryBuilder<Album> getBuilder(BiConsumer<Album, ArbitraryBuilder<Album>> builder) {
+    return fixtureMonkey.giveMeBuilder(Album.class).thenApply(builder);
+  }
 }

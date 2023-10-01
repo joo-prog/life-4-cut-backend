@@ -7,21 +7,19 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class UrlPath {
 
+  private String value;
 
-    private String value;
+  private UrlPath() {}
 
-    private UrlPath() {
-    }
+  protected UrlPath(String value) {
+    this.value = value;
+  }
 
-    protected UrlPath(String value) {
-        this.value = value;
-    }
+  public static UrlPath of(String value) {
+    return new UrlPath(value);
+  }
 
-    public static UrlPath of(String value) {
-        return new UrlPath(value);
-    }
-
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 }

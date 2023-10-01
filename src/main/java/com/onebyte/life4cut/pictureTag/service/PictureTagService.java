@@ -12,17 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PictureTagService {
 
-    private final PictureTagRepository pictureTagRepository;
-    private final UserAlbumRepository userAlbumRepository;
+  private final PictureTagRepository pictureTagRepository;
+  private final UserAlbumRepository userAlbumRepository;
 
-    public List<PictureTag> searchTags(final Long albumId, final Long userId,
-        final String keyword) {
-        userAlbumRepository.findByUserIdAndAlbumId(userId, albumId)
-            .orElseThrow(
-                UserAlbumRolePermissionException::new);
+  public List<PictureTag> searchTags(final Long albumId, final Long userId, final String keyword) {
+    userAlbumRepository
+        .findByUserIdAndAlbumId(userId, albumId)
+        .orElseThrow(UserAlbumRolePermissionException::new);
 
-        return pictureTagRepository.search(albumId, keyword);
-    }
-
-
+    return pictureTagRepository.search(albumId, keyword);
+  }
 }

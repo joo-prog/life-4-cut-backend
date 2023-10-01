@@ -13,8 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
   @Override
-  public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException exception) throws IOException, ServletException {
+  public void onAuthenticationFailure(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+      throws IOException, ServletException {
 
     log.error("Login Fail: {}", exception.getMessage());
     super.onAuthenticationFailure(request, response, exception);

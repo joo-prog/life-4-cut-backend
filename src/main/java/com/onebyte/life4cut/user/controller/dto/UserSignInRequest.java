@@ -21,5 +21,4 @@ public class UserSignInRequest {
         .oauthId(oauthId)
         .build();
   }
-
 }

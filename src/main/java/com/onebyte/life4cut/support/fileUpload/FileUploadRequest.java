@@ -4,13 +4,13 @@ import java.io.InputStream;
 
 public interface FileUploadRequest {
 
-    String getBucket();
+  String getBucket();
 
-    InputStream getInputStream();
+  InputStream getInputStream();
 
-    String getFileName();
+  String getFileName();
 
-    String getContentType();
+  String getContentType();
 
-    long getContentLength();
+  long getContentLength();
 }

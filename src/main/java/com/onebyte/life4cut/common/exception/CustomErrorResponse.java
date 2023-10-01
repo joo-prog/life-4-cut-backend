@@ -12,8 +12,7 @@ public class CustomErrorResponse {
     this.message = message;
   }
 
-  @NotBlank
-  private final String message;
+  @NotBlank private final String message;
 
   private final Map<String, String> data = new HashMap<>();
 }

@@ -40,8 +40,7 @@ import org.springframework.util.MultiValueMap;
 @WebMvcTest({UserController.class})
 class UserControllerTest extends ControllerTest {
 
-  @MockBean
-  UserService userService;
+  @MockBean UserService userService;
 
   private static final String baseUri = "/api/v1/users";
 
@@ -54,14 +53,15 @@ class UserControllerTest extends ControllerTest {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("nickname", nickname);
 
-    User user = User.builder()
-        .id(1L)
-        .nickname(nickname)
-        .oauthId("12345")
-        .oauthType("kakao")
-        .profilePath("profilePath")
-        .email("bell@gmail.com")
-        .build();
+    User user =
+        User.builder()
+            .id(1L)
+            .nickname(nickname)
+            .oauthId("12345")
+            .oauthType("kakao")
+            .profilePath("profilePath")
+            .email("bell@gmail.com")
+            .build();
     UserFindResponse result = UserFindResponse.of(user);
 
     // when
@@ -69,7 +69,8 @@ class UserControllerTest extends ControllerTest {
 
     // then
     ResultActions actions = performGet(baseUri, params);
-    actions.andExpect(status().isOk())
+    actions
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.data", equalTo(asParsedJson(result))))
         .andDo(
@@ -81,9 +82,7 @@ class UserControllerTest extends ControllerTest {
                     ResourceSnippetParameters.builder()
                         .tag("USER API")
                         .description("닉네임 유저 조회 API")
-                        .queryParameters(
-                            parameterWithName("nickname").description("유저 닉네임")
-                        )
+                        .queryParameters(parameterWithName("nickname").description("유저 닉네임"))
                         .requestFields()
                         .responseFields(
                             fieldWithPath("message").type(STRING).description("응답 메시지"),
@@ -91,13 +90,10 @@ class UserControllerTest extends ControllerTest {
                             fieldWithPath("data.userId").type(NUMBER).description("유저 ID"),
                             fieldWithPath("data.nickname").type(STRING).description("유저 닉네임"),
                             fieldWithPath("data.email").type(STRING).description("유저 이메일"),
-                            fieldWithPath("data.profilePath").type(STRING)
-                                .description("유저 프로필 사진 파일 경로")
-                        )
-                        .build()
-                )
-            )
-        )
+                            fieldWithPath("data.profilePath")
+                                .type(STRING)
+                                .description("유저 프로필 사진 파일 경로"))
+                        .build())))
         .andDo(print());
   }
 
@@ -115,7 +111,8 @@ class UserControllerTest extends ControllerTest {
 
     // then
     ResultActions actions = performGet(baseUri, params);
-    actions.andExpect(status().isNotFound())
+    actions
+        .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value(ErrorCode.USER_NOT_FOUND.getMessage()))
         .andDo(
             MockMvcRestDocumentationWrapper.document(
@@ -129,12 +126,8 @@ class UserControllerTest extends ControllerTest {
                         .requestFields()
                         .responseFields(
                             fieldWithPath("message").type(STRING).description("응답 메시지"),
-                            fieldWithPath("data").type(OBJECT).description("데이터")
-                        )
-                        .build()
-                )
-            )
-        )
+                            fieldWithPath("data").type(OBJECT).description("데이터"))
+                        .build())))
         .andDo(print());
   }
 
@@ -144,14 +137,15 @@ class UserControllerTest extends ControllerTest {
   void findMe() throws Exception {
     // given
     String nickname = "bell";
-    User user = User.builder()
-        .id(1L)
-        .nickname(nickname)
-        .oauthId("12345")
-        .oauthType("kakao")
-        .profilePath("profilePath")
-        .email("bell@gmail.com")
-        .build();
+    User user =
+        User.builder()
+            .id(1L)
+            .nickname(nickname)
+            .oauthId("12345")
+            .oauthType("kakao")
+            .profilePath("profilePath")
+            .email("bell@gmail.com")
+            .build();
     UserFindResponse result = UserFindResponse.of(user);
 
     // when
@@ -159,7 +153,8 @@ class UserControllerTest extends ControllerTest {
 
     // then
     ResultActions actions = performGet(baseUri + "/me");
-    actions.andExpect(status().isOk())
+    actions
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.data", equalTo(asParsedJson(result))))
         .andDo(

@@ -18,50 +18,45 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(
     indexes = {
-        @Index(name = "idx_picture_tag_1", columnList = "albumId,name", unique = true),
-        @Index(name = "idx_picture_tag_2", columnList = "authorId")
-    }
-)
+      @Index(name = "idx_picture_tag_1", columnList = "albumId,name", unique = true),
+      @Index(name = "idx_picture_tag_2", columnList = "authorId")
+    })
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class PictureTag extends BaseEntity {
 
-    @Nonnull
-    @Column(nullable = false)
-    private Long albumId;
+  @Nonnull
+  @Column(nullable = false)
+  private Long albumId;
 
-    @Nonnull
-    @Column(nullable = false)
-    private Long authorId;
+  @Nonnull
+  @Column(nullable = false)
+  private Long authorId;
 
-    @Nonnull
-    @Embedded
-    private PictureTagName name;
+  @Nonnull @Embedded private PictureTagName name;
 
-    @Nullable
-    @Column
-    private LocalDateTime deletedAt;
+  @Nullable @Column private LocalDateTime deletedAt;
 
-    @Nonnull
-    public static PictureTag create(@Nonnull final Long albumId, @Nonnull final Long authorId,
-        @Nonnull final String name) {
-        PictureTag pictureTag = new PictureTag();
-        pictureTag.albumId = albumId;
-        pictureTag.authorId = authorId;
-        pictureTag.name = PictureTagName.of(name);
-        return pictureTag;
+  @Nonnull
+  public static PictureTag create(
+      @Nonnull final Long albumId, @Nonnull final Long authorId, @Nonnull final String name) {
+    PictureTag pictureTag = new PictureTag();
+    pictureTag.albumId = albumId;
+    pictureTag.authorId = authorId;
+    pictureTag.name = PictureTagName.of(name);
+    return pictureTag;
+  }
+
+  public void restoreIfRequired() {
+    if (isDeleted()) {
+      restore();
     }
+  }
 
-    public void restoreIfRequired() {
-        if (isDeleted()) {
-            restore();
-        }
-    }
+  private boolean isDeleted() {
+    return deletedAt != null;
+  }
 
-    private boolean isDeleted() {
-        return deletedAt != null;
-    }
-
-    private void restore() {
-        deletedAt = null;
-    }
+  private void restore() {
+    deletedAt = null;
+  }
 }

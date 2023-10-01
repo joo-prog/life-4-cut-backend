@@ -10,8 +10,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-public class WithCustomMockUserSecurityContextFactory implements
-    WithSecurityContextFactory<WithCustomMockUser> {
+public class WithCustomMockUserSecurityContextFactory
+    implements WithSecurityContextFactory<WithCustomMockUser> {
 
   @Override
   public SecurityContext createSecurityContext(WithCustomMockUser annotation) {
@@ -19,7 +19,7 @@ public class WithCustomMockUserSecurityContextFactory implements
     String password = annotation.password();
     long userId = annotation.userId();
 
-    //여기서 바인딩되어 반환할 객체를 정의해주면 됩니다
+    // 여기서 바인딩되어 반환할 객체를 정의해주면 됩니다
     List<GrantedAuthority> roles = AuthorityUtils.createAuthorityList("ADMIN");
     CustomUserDetails user = new CustomUserDetails(username, password, userId, roles);
 

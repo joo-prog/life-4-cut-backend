@@ -27,10 +27,12 @@ public class OAuthUserService extends DefaultOAuth2UserService {
 
     List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ADMIN");
 
-    String userNameAttributeName = userRequest.getClientRegistration()
-        .getProviderDetails()
-        .getUserInfoEndpoint()
-        .getUserNameAttributeName();
+    String userNameAttributeName =
+        userRequest
+            .getClientRegistration()
+            .getProviderDetails()
+            .getUserInfoEndpoint()
+            .getUserNameAttributeName();
 
     return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), userNameAttributeName);
   }

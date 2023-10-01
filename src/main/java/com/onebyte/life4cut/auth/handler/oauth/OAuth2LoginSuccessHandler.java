@@ -4,8 +4,8 @@ import com.onebyte.life4cut.auth.domain.RefreshToken;
 import com.onebyte.life4cut.auth.dto.OAuthInfo;
 import com.onebyte.life4cut.auth.handler.jwt.TokenProvider;
 import com.onebyte.life4cut.auth.repository.RefreshTokenRepository;
-import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.controller.dto.UserSignInRequest;
+import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-
   private final UserService userService;
   private final RefreshTokenRepository refreshTokenRepository;
   private final TokenProvider tokenProvider;
 
   @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication) throws IOException, ServletException {
+  public void onAuthenticationSuccess(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+      throws IOException, ServletException {
 
     OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
     String type = token.getAuthorizedClientRegistrationId();
@@ -41,12 +41,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     Optional<User> findUser = userService.findUserByOAuthInfo(oAuthInfo);
     if (findUser.isEmpty()) {
-      UserSignInRequest signInUser = UserSignInRequest.builder()
-          .nickname(oAuthInfo.getEmail())
-          .email(oAuthInfo.getEmail())
-          .oauthId(oAuthInfo.getOauthId())
-          .oauthType(oAuthInfo.getOauthType().getType())
-          .build();
+      UserSignInRequest signInUser =
+          UserSignInRequest.builder()
+              .nickname(oAuthInfo.getEmail())
+              .email(oAuthInfo.getEmail())
+              .oauthId(oAuthInfo.getOauthId())
+              .oauthType(oAuthInfo.getOauthType().getType())
+              .build();
       User user = userService.save(signInUser);
       setTokenCookie(request, response, authentication, user);
     } else {
@@ -55,8 +56,12 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     }
   }
 
-  private void setTokenCookie(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication, User user) throws IOException, ServletException {
+  private void setTokenCookie(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Authentication authentication,
+      User user)
+      throws IOException, ServletException {
     String accessToken = tokenProvider.createAccessToken(authentication, user.getId());
     String refreshToken = tokenProvider.createRefreshToken(authentication, user.getId());
     refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));

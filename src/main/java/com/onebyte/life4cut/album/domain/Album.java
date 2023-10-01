@@ -5,17 +5,14 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import java.time.LocalDateTime;
 
 @Entity
 public class Album extends BaseEntity {
 
-    @Nonnull
-    @Column(nullable = false)
-    private String name;
+  @Nonnull
+  @Column(nullable = false)
+  private String name;
 
-    @Nullable
-    @Column
-    private LocalDateTime deletedAt;
+  @Nullable @Column private LocalDateTime deletedAt;
 }

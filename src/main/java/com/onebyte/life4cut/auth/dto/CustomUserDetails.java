@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails, Serializable {
 
-  public CustomUserDetails(String username, String password, long userId,
-      Collection<GrantedAuthority> authorities) {
+  public CustomUserDetails(
+      String username, String password, long userId, Collection<GrantedAuthority> authorities) {
     this.username = username;
     this.password = password;
     this.userId = userId;
@@ -39,34 +39,25 @@ public class CustomUserDetails implements UserDetails, Serializable {
     return userId;
   }
 
-
-  /**
-   * 계정 만료되지 않았는지 여부
-   */
+  /** 계정 만료되지 않았는지 여부 */
   @Override
   public boolean isAccountNonExpired() {
     return true;
   }
 
-  /**
-   * 계정이 잠겨있지 않는지 여부
-   */
+  /** 계정이 잠겨있지 않는지 여부 */
   @Override
   public boolean isAccountNonLocked() {
     return true;
   }
 
-  /**
-   * 비밀번호 만료되지 않았는지 여부
-   */
+  /** 비밀번호 만료되지 않았는지 여부 */
   @Override
   public boolean isCredentialsNonExpired() {
     return true;
   }
 
-  /**
-   * 사용자 활성화 여부
-   */
+  /** 사용자 활성화 여부 */
   @Override
   public boolean isEnabled() {
     return true;

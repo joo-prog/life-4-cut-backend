@@ -9,11 +9,11 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Component
 public class FileUploadConfiguration {
 
-    @Bean
-    S3Client s3Client(AwsEnv awsEnv) {
-        return S3Client.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .region(Region.of(awsEnv.region()))
-                .build();
-    }
+  @Bean
+  S3Client s3Client(AwsEnv awsEnv) {
+    return S3Client.builder()
+        .credentialsProvider(DefaultCredentialsProvider.create())
+        .region(Region.of(awsEnv.region()))
+        .build();
+  }
 }

@@ -33,42 +33,34 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http
-        .csrf(AbstractHttpConfigurer::disable)
+    return http.csrf(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
-
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/api/v1/samples").authenticated()
-            .anyRequest().permitAll()
-        )
-
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-
+        .authorizeHttpRequests(
+            authorize ->
+                authorize
+                    .requestMatchers("/api/v1/samples")
+                    .authenticated()
+                    .anyRequest()
+                    .permitAll())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(
             new JwtAuthenticationFilter(tokenProvider, refreshTokenRepository),
-            UsernamePasswordAuthenticationFilter.class
-        )
-
-        .oauth2Login((oauth2) -> oauth2
-                // 로그인 페이지
-//                        .loginPage("frontend-login-page")
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(oAuth2UserService)
-                )
-                .successHandler(oAuthLoginSuccessHandler)
-                .failureHandler(oAuthLoginFailureHandler)
-        )
-
-        .exceptionHandling(exception -> exception
-            .authenticationEntryPoint(clientAuthenticationEntryPoint)
-            .accessDeniedHandler(clientAccessDeniedHandler)
-        )
-
+            UsernamePasswordAuthenticationFilter.class)
+        .oauth2Login(
+            (oauth2) ->
+                oauth2
+                    // 로그인 페이지
+                    //                        .loginPage("frontend-login-page")
+                    .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                    .successHandler(oAuthLoginSuccessHandler)
+                    .failureHandler(oAuthLoginFailureHandler))
+        .exceptionHandling(
+            exception ->
+                exception
+                    .authenticationEntryPoint(clientAuthenticationEntryPoint)
+                    .accessDeniedHandler(clientAccessDeniedHandler))
         .build();
   }
-
-
 }

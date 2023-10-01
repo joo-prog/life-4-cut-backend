@@ -10,7 +10,8 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 public @interface WithCustomMockUser {
 
   String username() default "bell";
-  String password() default "1234";
-  long userId() default 1L;
 
+  String password() default "1234";
+
+  long userId() default 1L;
 }

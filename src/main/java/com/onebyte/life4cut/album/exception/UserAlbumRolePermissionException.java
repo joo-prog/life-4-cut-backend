@@ -5,13 +5,11 @@ import com.onebyte.life4cut.common.exception.ErrorCode;
 
 public class UserAlbumRolePermissionException extends CustomException {
 
-    public UserAlbumRolePermissionException() {
-        super(ErrorCode.USER_ALBUM_ROLE_PERMISSION);
-    }
+  public UserAlbumRolePermissionException() {
+    super(ErrorCode.USER_ALBUM_ROLE_PERMISSION);
+  }
 
-    public UserAlbumRolePermissionException(ErrorCode errorCode) {
-        super(errorCode);
-    }
-
-
+  public UserAlbumRolePermissionException(ErrorCode errorCode) {
+    super(errorCode);
+  }
 }

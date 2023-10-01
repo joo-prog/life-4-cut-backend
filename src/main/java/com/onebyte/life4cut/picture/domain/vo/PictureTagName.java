@@ -14,23 +14,22 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class PictureTagName {
 
-    private static final int MAX_LENGTH = 30;
+  private static final int MAX_LENGTH = 30;
 
-    @Nonnull
-    @Column(nullable = false, length = 30, name = "name")
-    private String value;
+  @Nonnull
+  @Column(nullable = false, length = 30, name = "name")
+  private String value;
 
-    private PictureTagName(final @Nonnull String value) {
-        this.value = value;
+  private PictureTagName(final @Nonnull String value) {
+    this.value = value;
+  }
+
+  @Nonnull
+  public static PictureTagName of(@Nonnull final String value) {
+    if (value.trim().length() > MAX_LENGTH) {
+      throw new IllegalArgumentException("태그는 30자를 초과할 수 없습니다");
     }
 
-    @Nonnull
-    public static PictureTagName of(@Nonnull final String value) {
-        if (value.trim().length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("태그는 30자를 초과할 수 없습니다");
-        }
-
-        return new PictureTagName(value.trim());
-    }
-
+    return new PictureTagName(value.trim());
+  }
 }
