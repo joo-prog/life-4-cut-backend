@@ -16,6 +16,10 @@ spring:
     database: MYSQL
     hibernate:
       ddl-auto: none
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 12MB
 
 ---
 spring:
@@ -111,7 +115,12 @@ auth:
 
 aws:
   region: ap-northeast-2
+  s3:
+    bucket: life-4-cut-development
 
 #logging:
 #  level:
 #    org.springframework.security: TRACE
+#    org.hibernate.SQL: debug
+#    org.springframework.orm.jpa: DEBUG
+#    org.springframework.transaction: DEBUG

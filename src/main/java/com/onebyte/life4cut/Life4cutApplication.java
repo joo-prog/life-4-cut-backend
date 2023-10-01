@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 @SpringBootApplication
 public class Life4cutApplication {
-
   public static void main(String[] args) {
     SpringApplication.run(Life4cutApplication.class, args);
   }

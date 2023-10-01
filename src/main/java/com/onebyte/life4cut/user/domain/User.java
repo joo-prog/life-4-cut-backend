@@ -16,12 +16,13 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(
+    name = "users",
     uniqueConstraints = {
         @UniqueConstraint(
             name = "unique_user_oauth_index",
             columnNames = {
-                "oauth_type",
-                "oauth_id",
+                "oauthType",
+                "oauthId",
             }
         ),
         @UniqueConstraint(
@@ -32,20 +33,22 @@ import lombok.experimental.SuperBuilder;
 )
 public class User extends BaseEntity {
 
-  @Column(unique = true, length = 30)
+  @Column(unique = true, length = 30, nullable = false)
   private String nickname;
 
   @Column(length = 255)
   private String profilePath;
 
+  @Column(nullable = false)
   private String email;
 
-  @Column(name = "oauth_type", length = 30)
+  @Column(length = 30)
   private String oauthType;
 
-  @Column(name = "oauth_id", length = 100)
+  @Column(length = 100)
   private String oauthId;
 
+  @Column
   private LocalDateTime deletedAt;
 
   public void deleteSoftly(LocalDateTime deletedAt) {
