@@ -22,9 +22,8 @@ public class UserService {
   }
 
   public User findUser(long id) {
-    User user = userRepository.findUser(id)
+    return userRepository.findUser(id)
         .orElseThrow(UserNotFound::new);
-    return user;
   }
 
   public Optional<User> findUserByOAuthInfo(OAuthInfo oAuthInfo) {
@@ -38,5 +37,9 @@ public class UserService {
   public User findUserByNickname(String nickname) {
     return userRepository.findUserByNickname(nickname)
         .orElseThrow(UserNotFound::new);
+  }
+
+  public Optional<User> findUserByNicknameForCheckingDuplication(String nickname) {
+    return userRepository.findUserByNickname(nickname);
   }
 }
