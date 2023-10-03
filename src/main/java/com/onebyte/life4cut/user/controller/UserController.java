@@ -24,17 +24,13 @@ public class UserController {
   @GetMapping
   public ApiResponse<UserFindResponse> findUser(@RequestParam("nickname") String nickname) {
     User result = userService.findUserByNickname(nickname);
-    return ApiResponse.OK(
-        UserFindResponse.of(result)
-    );
+    return ApiResponse.OK(UserFindResponse.of(result));
   }
 
   @GetMapping("/me")
   public ApiResponse<UserFindResponse> findMe(@AuthenticationPrincipal CustomUserDetails user) {
     User result = userService.findUser(user.getUserId());
-    return ApiResponse.OK(
-        UserFindResponse.of(result)
-    );
+    return ApiResponse.OK(UserFindResponse.of(result));
   }
 
   @GetMapping("/duplicate")

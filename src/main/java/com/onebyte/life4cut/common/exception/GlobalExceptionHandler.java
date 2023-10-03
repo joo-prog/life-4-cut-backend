@@ -23,8 +23,7 @@ public class GlobalExceptionHandler {
   }
 
   private ResponseEntity<CustomErrorResponse> makeResponseEntity(
-      String message,
-      HttpStatus httpStatus) {
+      String message, HttpStatus httpStatus) {
     CustomErrorResponse response = new CustomErrorResponse(message);
     return new ResponseEntity<>(response, httpStatus);
   }

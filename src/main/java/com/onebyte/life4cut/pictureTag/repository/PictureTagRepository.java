@@ -5,11 +5,11 @@ import java.util.List;
 
 public interface PictureTagRepository {
 
-    List<PictureTag> findByNames(Long albumId, List<String> names);
+  List<PictureTag> findByNames(Long albumId, List<String> names);
 
-    List<PictureTag> saveAll(Iterable<PictureTag> pictureTags);
+  List<PictureTag> saveAll(Iterable<PictureTag> pictureTags);
 
-    PictureTag save(PictureTag pictureTag);
+  PictureTag save(PictureTag pictureTag);
 
-    List<PictureTag> search(Long albumId, String keyword);
+  List<PictureTag> search(Long albumId, String keyword);
 }

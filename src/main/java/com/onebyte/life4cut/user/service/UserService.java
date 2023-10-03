@@ -1,8 +1,8 @@
 package com.onebyte.life4cut.user.service;
 
 import com.onebyte.life4cut.auth.dto.OAuthInfo;
-import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.controller.dto.UserSignInRequest;
+import com.onebyte.life4cut.user.domain.User;
 import com.onebyte.life4cut.user.exception.UserNotFound;
 import com.onebyte.life4cut.user.exception.UserNotUnique;
 import com.onebyte.life4cut.user.repository.UserRepository;
@@ -35,8 +35,7 @@ public class UserService {
   }
 
   public User findUserByNickname(String nickname) {
-    return userRepository.findUserByNickname(nickname)
-        .orElseThrow(UserNotFound::new);
+    return userRepository.findUserByNickname(nickname).orElseThrow(UserNotFound::new);
   }
 
   public Optional<User> findUserByNicknameForCheckingDuplication(String nickname) {

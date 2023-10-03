@@ -19,8 +19,11 @@ public class ClientAccessDeniedHandler implements AccessDeniedHandler {
   private final ObjectMapper objectMapper;
 
   @Override
-  public void handle(HttpServletRequest request, HttpServletResponse response,
-      AccessDeniedException accessDeniedException) throws IOException {
+  public void handle(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AccessDeniedException accessDeniedException)
+      throws IOException {
 
     response.setStatus(HttpStatus.FORBIDDEN.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

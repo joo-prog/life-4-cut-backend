@@ -29,9 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     String accessToken = resolveAccessToken(request);
     String requestUri = request.getRequestURI();
@@ -39,8 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken)) {
       Authentication authentication = tokenProvider.getAuthentication(accessToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(),
-          requestUri);
+      log.debug(
+          "Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestUri);
     } else {
       checkRefreshToken(request, response);
       log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestUri);
@@ -88,8 +87,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
-  private void validateRefreshToken(String refreshToken, CustomUserDetails userDetails,
-      HttpServletResponse response) {
+  private void validateRefreshToken(
+      String refreshToken, CustomUserDetails userDetails, HttpServletResponse response) {
     log.info("Validate Refresh Token");
     Optional<RefreshToken> findRefresh = refreshTokenRepository.findById(refreshToken);
     if (findRefresh.isEmpty()) {

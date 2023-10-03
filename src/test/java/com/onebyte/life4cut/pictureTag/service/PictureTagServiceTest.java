@@ -20,60 +20,60 @@ import org.junit.jupiter.api.Test;
 
 class PictureTagServiceTest {
 
-    private final PictureTagRepository pictureTagRepository = mock(PictureTagRepository.class);
-    private final UserAlbumRepository userAlbumRepository = mock(UserAlbumRepository.class);
-    private final UserAlbumFixtureFactory userAlbumFixtureFactory = new UserAlbumFixtureFactory();
-    private final PictureTagService pictureTagService = new PictureTagService(pictureTagRepository,
-        userAlbumRepository);
+  private final PictureTagRepository pictureTagRepository = mock(PictureTagRepository.class);
+  private final UserAlbumRepository userAlbumRepository = mock(UserAlbumRepository.class);
+  private final UserAlbumFixtureFactory userAlbumFixtureFactory = new UserAlbumFixtureFactory();
+  private final PictureTagService pictureTagService =
+      new PictureTagService(pictureTagRepository, userAlbumRepository);
 
-    @Nested
-    class SearchTags {
+  @Nested
+  class SearchTags {
 
-        @Test
-        @DisplayName("앨범 권한이 없는 경우 UserAlbumRolePermissionException 예외가 발생한다")
-        void noUserAlbumRole() {
-            // given
-            String keyword = "bell";
-            Long albumId = 1L;
-            Long userId = 1L;
+    @Test
+    @DisplayName("앨범 권한이 없는 경우 UserAlbumRolePermissionException 예외가 발생한다")
+    void noUserAlbumRole() {
+      // given
+      String keyword = "bell";
+      Long albumId = 1L;
+      Long userId = 1L;
 
-            when(userAlbumRepository.findByUserIdAndAlbumId(userId, albumId)).thenReturn(
-                Optional.empty());
+      when(userAlbumRepository.findByUserIdAndAlbumId(userId, albumId))
+          .thenReturn(Optional.empty());
 
-            // when
-            Exception exception = catchException(
-                () -> pictureTagService.searchTags(albumId, userId, keyword));
+      // when
+      Exception exception =
+          catchException(() -> pictureTagService.searchTags(albumId, userId, keyword));
 
-            // then
-            assertThat(exception).isInstanceOf(UserAlbumRolePermissionException.class);
-        }
+      // then
+      assertThat(exception).isInstanceOf(UserAlbumRolePermissionException.class);
+    }
 
-        @Test
-        @DisplayName("권한이 있는 경우 태그를 조회한다")
-        void searchTags() {
-            // given
-            String keyword = "bell";
-            Long albumId = 1L;
-            Long userId = 1L;
+    @Test
+    @DisplayName("권한이 있는 경우 태그를 조회한다")
+    void searchTags() {
+      // given
+      String keyword = "bell";
+      Long albumId = 1L;
+      Long userId = 1L;
 
-            UserAlbum host = userAlbumFixtureFactory.make((entity, builder) -> {
+      UserAlbum host =
+          userAlbumFixtureFactory.make(
+              (entity, builder) -> {
                 builder.set("userId", userId);
                 builder.set("albumId", albumId);
                 builder.set("role", UserAlbumRole.HOST);
-            });
+              });
 
-            when(userAlbumRepository.findByUserIdAndAlbumId(userId, albumId)).thenReturn(
-                Optional.of(host));
+      when(userAlbumRepository.findByUserIdAndAlbumId(userId, albumId))
+          .thenReturn(Optional.of(host));
 
-            when(pictureTagRepository.search(albumId, keyword)).thenReturn(List.of());
+      when(pictureTagRepository.search(albumId, keyword)).thenReturn(List.of());
 
-            // when
-            List<PictureTag> pictureTags = pictureTagService.searchTags(albumId, userId, keyword);
+      // when
+      List<PictureTag> pictureTags = pictureTagService.searchTags(albumId, userId, keyword);
 
-            // then
-            assertThat(pictureTags).isEmpty();
-        }
+      // then
+      assertThat(pictureTags).isEmpty();
     }
-
-
+  }
 }

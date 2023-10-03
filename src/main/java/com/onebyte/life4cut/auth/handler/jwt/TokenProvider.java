@@ -45,8 +45,7 @@ public class TokenProvider implements InitializingBean {
       RedisTemplate<String, String> redisTemplate,
       @Value("${auth.jwt.secret}") String secret,
       @Value("${auth.jwt.expires}") Duration expires,
-      @Value("${auth.jwt.refresh-expires}") Duration refreshExpires
-  ) {
+      @Value("${auth.jwt.refresh-expires}") Duration refreshExpires) {
     this.redisTemplate = redisTemplate;
     this.secret = secret;
     this.expires = expires.toMillis();
@@ -62,9 +61,10 @@ public class TokenProvider implements InitializingBean {
 
   public String createAccessToken(Authentication authentication, long userId) {
 
-    String authorities = authentication.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.joining(","));
+    String authorities =
+        authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
 
     long now = System.currentTimeMillis(); // Date getTime 메소드보다 우수
 
@@ -81,48 +81,44 @@ public class TokenProvider implements InitializingBean {
   }
 
   public String createRefreshToken(Authentication authentication, long userId) {
-    String authorities = authentication.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.joining(","));
+    String authorities =
+        authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
     long now = System.currentTimeMillis();
 
     Map<String, Object> payload = new HashMap<>();
     payload.put(USER_ID, userId);
     payload.put(AUTHORITY_KEY, authorities);
 
-    String refreshToken = Jwts.builder()
-        .setSubject(authentication.getName())
-        .setClaims(payload)
-        .setExpiration(new Date(now + this.refreshExpires))
-        .signWith(key, SignatureAlgorithm.HS512)
-        .compact();
+    String refreshToken =
+        Jwts.builder()
+            .setSubject(authentication.getName())
+            .setClaims(payload)
+            .setExpiration(new Date(now + this.refreshExpires))
+            .signWith(key, SignatureAlgorithm.HS512)
+            .compact();
 
-    redisTemplate.opsForValue().set(
-        authentication.getName(),
-        refreshToken,
-        refreshExpires,
-        TimeUnit.MICROSECONDS
-    );
+    redisTemplate
+        .opsForValue()
+        .set(authentication.getName(), refreshToken, refreshExpires, TimeUnit.MICROSECONDS);
     return refreshToken;
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parserBuilder()
-        .setSigningKey(key)
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+    Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 
     log.debug("Token Expiration: {}", claims.getExpiration());
 
-    List<GrantedAuthority> authorities = Arrays.stream(
-            claims.get(AUTHORITY_KEY).toString().split(","))
-        .map(SimpleGrantedAuthority::new)
-        .collect(Collectors.toList());
+    List<GrantedAuthority> authorities =
+        Arrays.stream(claims.get(AUTHORITY_KEY).toString().split(","))
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
 
     long userId = claims.get(USER_ID, Long.class);
 
-    CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", userId, authorities);
+    CustomUserDetails principal =
+        new CustomUserDetails(claims.getSubject(), "", userId, authorities);
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);
   }
 

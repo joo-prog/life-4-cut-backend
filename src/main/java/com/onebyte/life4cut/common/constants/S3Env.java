@@ -6,8 +6,4 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "aws.s3")
 @Validated
-public record S3Env(
-    @NotEmpty String bucket
-) {
-}
-
+public record S3Env(@NotEmpty String bucket) {}

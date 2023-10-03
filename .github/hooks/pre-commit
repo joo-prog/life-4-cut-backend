@@ -1,0 +1,27 @@
+#!/bin/sh
+
+stagedFiles=$(git diff --cached --name-only)
+STASH_STAGED_FILES="pre-commit-staged-files"
+STASH_UNSTAGED_FILES="pre-commit-unstaged-files"
+
+if [ -z "$stagedFiles" ]; then
+  exit 0
+fi
+
+git stash push -m "$STASH_STAGED_FILES" $stagedFiles
+
+git stash push -m "$STASH_UNSTAGED_FILES" --include-untracked
+
+git stash pop --index 1
+
+isSuccess=true
+
+./gradlew spotlessCheck || isSuccess=false
+
+git stash pop --index 0
+
+if [ "$isSuccess" = false ]; then
+  echo "Spotless check failed, please run ./gradlew spotlessApply"
+  exit 1
+fi
+

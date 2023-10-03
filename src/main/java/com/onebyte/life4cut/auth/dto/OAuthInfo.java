@@ -12,8 +12,10 @@ public class OAuthInfo {
 
   @Value("${auth.kakao.secret}")
   private static String kakaoSecret;
+
   @Value("${auth.naver.secret}")
   private static String naverSecret;
+
   @Value("${auth.google.secret}")
   private static String googleSecret;
 
@@ -42,17 +44,21 @@ public class OAuthInfo {
   }
 
   private static OAuthInfo createKakao(OAuth2AuthenticationToken token) {
-    String email = ((Map<String, Object>) token.getPrincipal().getAttribute("kakao_account")).get(
-        "email").toString();
+    String email =
+        ((Map<String, Object>) token.getPrincipal().getAttribute("kakao_account"))
+            .get("email")
+            .toString();
     String id = token.getPrincipal().getAttribute("id").toString();
     return new OAuthInfo(email, OAuthType.KAKAO_LOGIN, id, kakaoSecret);
   }
 
   private static OAuthInfo createNaver(OAuth2AuthenticationToken token) {
-    String email = ((Map<String, Object>) token.getPrincipal().getAttribute("response")).get(
-        "email").toString();
-    String id = ((Map<String, Object>) token.getPrincipal().getAttribute("response")).get("id")
-        .toString();
+    String email =
+        ((Map<String, Object>) token.getPrincipal().getAttribute("response"))
+            .get("email")
+            .toString();
+    String id =
+        ((Map<String, Object>) token.getPrincipal().getAttribute("response")).get("id").toString();
     return new OAuthInfo(email, OAuthType.NAVER_LOGIN, id, naverSecret);
   }
 

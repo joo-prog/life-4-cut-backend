@@ -27,37 +27,36 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AlbumController {
 
-    private final PictureService pictureService;
-    private final PictureTagService pictureTagService;
+  private final PictureService pictureService;
+  private final PictureTagService pictureTagService;
 
-    @PostMapping("/{albumId}/pictures")
-    public ApiResponse<CreatePictureResponse> uploadPicture(
-        @Min(1) @PathVariable("albumId") Long albumId,
-        @Valid @RequestPart("data") CreatePictureRequest request,
-        @RequestPart("image") MultipartFile image,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long pictureId = pictureService.createInSlot(
+  @PostMapping("/{albumId}/pictures")
+  public ApiResponse<CreatePictureResponse> uploadPicture(
+      @Min(1) @PathVariable("albumId") Long albumId,
+      @Valid @RequestPart("data") CreatePictureRequest request,
+      @RequestPart("image") MultipartFile image,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long pictureId =
+        pictureService.createInSlot(
             userDetails.getUserId(),
             albumId,
             request.slotId(),
             request.content(),
             request.picturedAt().atTime(0, 0),
             request.tags(),
-            image
-        );
+            image);
 
-        return ApiResponse.OK(new CreatePictureResponse(pictureId));
-    }
+    return ApiResponse.OK(new CreatePictureResponse(pictureId));
+  }
 
-    @GetMapping("/{albumId}/tags")
-    public ApiResponse<SearchTagsResponse> searchTags(
-        @Min(1) @PathVariable("albumId") Long albumId,
-        @AuthenticationPrincipal CustomUserDetails userDetails,
-        @Valid SearchTagsRequest request
-    ) {
-        List<PictureTag> pictureTags = pictureTagService.searchTags(albumId,
-            userDetails.getUserId(), request.keyword());
+  @GetMapping("/{albumId}/tags")
+  public ApiResponse<SearchTagsResponse> searchTags(
+      @Min(1) @PathVariable("albumId") Long albumId,
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid SearchTagsRequest request) {
+    List<PictureTag> pictureTags =
+        pictureTagService.searchTags(albumId, userDetails.getUserId(), request.keyword());
 
-        return ApiResponse.OK(SearchTagsResponse.of(pictureTags));
-    }
+    return ApiResponse.OK(SearchTagsResponse.of(pictureTags));
+  }
 }

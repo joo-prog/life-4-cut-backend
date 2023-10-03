@@ -6,7 +6,4 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "aws")
 @Validated
-public record AwsEnv(
-      @NotBlank String region
-) {
-}
+public record AwsEnv(@NotBlank String region) {}

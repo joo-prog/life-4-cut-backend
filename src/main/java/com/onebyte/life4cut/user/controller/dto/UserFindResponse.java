@@ -14,9 +14,8 @@ public class UserFindResponse {
   private final String email;
   private final String profilePath;
 
-
   public static UserFindResponse of(User user) {
-    return new UserFindResponse(user.getId(), user.getNickname(), user.getEmail(),
-        user.getProfilePath());
+    return new UserFindResponse(
+        user.getId(), user.getNickname(), user.getEmail(), user.getProfilePath());
   }
 }

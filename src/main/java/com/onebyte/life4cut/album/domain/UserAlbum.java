@@ -8,36 +8,32 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class UserAlbum extends BaseEntity {
 
-    @Nonnull
-    @Column(nullable = false)
-    private Long userId;
+  @Nonnull
+  @Column(nullable = false)
+  private Long userId;
 
-    @Nonnull
-    @Column(nullable = false)
-    private Long albumId;
+  @Nonnull
+  @Column(nullable = false)
+  private Long albumId;
 
-    @Nonnull
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserAlbumRole role;
+  @Nonnull
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private UserAlbumRole role;
 
-    @Nullable
-    @Column
-    private LocalDateTime deletedAt;
+  @Nullable @Column private LocalDateTime deletedAt;
 
-
-    public boolean isGuest() {
-        return role == UserAlbumRole.GUEST;
-    }
+  public boolean isGuest() {
+    return role == UserAlbumRole.GUEST;
+  }
 }

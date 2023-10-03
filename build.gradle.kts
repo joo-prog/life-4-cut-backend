@@ -7,6 +7,7 @@ plugins {
     id("jacoco")
     id("com.epages.restdocs-api-spec") version "0.18.2"
     id("org.hidetake.swagger.generator") version "2.18.2"
+    id("com.diffplug.spotless") version "6.22.0"
 }
 
 group = "com.onebyte"
@@ -68,7 +69,6 @@ dependencies {
     testImplementation("org.testcontainers:localstack")
 }
 
-
 openapi3 {
     setServer("http://localhost:8080")
     title = "spring-rest-docs + Swagger-UI"
@@ -77,7 +77,6 @@ openapi3 {
     format = "json"
     outputDirectory = "build/resources/main/static/docs"
 }
-
 
 sourceSets {
     getByName("main").java.srcDirs(querydslDir)
@@ -153,4 +152,35 @@ tasks {
 //            }
 //        }
 //    }
+}
+
+spotless {
+    java {
+        ratchetFrom("origin/main")
+        targetExclude("$querydslDir/**")
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat()
+        trimTrailingWhitespace()
+        custom("no wildcard imports") {
+            if (it.contains(".*;\n")) {
+                throw AssertionError("Do not use wildcard imports. 'spotlessApply' cannot resolve this issue. $it")
+            }
+
+            it
+        }
+    }
+}
+
+tasks.create("registerGitHooks") {
+    doLast {
+        val gitHooksDir = File(".git/hooks")
+        val githubHooksDir = File(".github/hooks")
+
+        githubHooksDir.listFiles()?.forEach { file ->
+            val targetFile = File(gitHooksDir, file.name)
+            file.copyTo(targetFile, overwrite = true)
+            targetFile.setExecutable(true)
+        }
+    }
 }

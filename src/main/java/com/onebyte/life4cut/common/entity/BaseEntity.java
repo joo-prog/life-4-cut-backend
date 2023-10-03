@@ -1,6 +1,5 @@
 package com.onebyte.life4cut.common.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -23,16 +22,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 public class BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  protected Long id;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+  @CreatedDate
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
 
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+  @LastModifiedDate
+  @Column(nullable = false)
+  private LocalDateTime updatedAt;
 }

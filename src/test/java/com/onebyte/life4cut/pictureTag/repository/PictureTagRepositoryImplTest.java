@@ -15,93 +15,100 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RepositoryTest(PictureTagRepositoryImpl.class)
 class PictureTagRepositoryImplTest {
 
-    @Autowired
-    private PictureTagFixtureFactory pictureTagFixtureFactory;
-    @Autowired
-    private PictureTagRepositoryImpl pictureTagRepositoryImpl;
+  @Autowired private PictureTagFixtureFactory pictureTagFixtureFactory;
+  @Autowired private PictureTagRepositoryImpl pictureTagRepositoryImpl;
 
-    @Nested
-    class Search {
+  @Nested
+  class Search {
 
-        @Test
-        @DisplayName("검색어가 포함된 태그를 조회한다.")
-        void searchByKeyword() {
-            // given
-            String keyword = "bell";
-            Long albumId = 1L;
+    @Test
+    @DisplayName("검색어가 포함된 태그를 조회한다.")
+    void searchByKeyword() {
+      // given
+      String keyword = "bell";
+      Long albumId = 1L;
 
-            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
+      PictureTag expectedTag =
+          pictureTagFixtureFactory.save(
+              (entity, builder) -> {
                 builder.set("albumId", albumId);
                 builder.set("name", PictureTagName.of("park bell park"));
                 builder.setNull("deletedAt");
-            });
+              });
 
-            pictureTagFixtureFactory.save((entity, builder) -> {
-                builder.set("albumId", albumId);
-                builder.set("name", PictureTagName.of("not include keyword"));
-                builder.setNull("deletedAt");
-            });
+      pictureTagFixtureFactory.save(
+          (entity, builder) -> {
+            builder.set("albumId", albumId);
+            builder.set("name", PictureTagName.of("not include keyword"));
+            builder.setNull("deletedAt");
+          });
 
-            // when
-            var results = pictureTagRepositoryImpl.search(albumId, keyword);
+      // when
+      var results = pictureTagRepositoryImpl.search(albumId, keyword);
 
-            // then
-            assertThat(results).hasSize(1);
-            assertThat(results.get(0)).isEqualTo(expectedTag);
-        }
-
-        @Test
-        @DisplayName("삭제된 태그는 조회하지 않는다")
-        void notSearchDeletedTag() {
-            // given
-            String keyword = "bell";
-            Long albumId = 1L;
-
-            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
-                builder.set("albumId", albumId);
-                builder.set("name", PictureTagName.of("park bell park"));
-                builder.setNull("deletedAt");
-            });
-
-            pictureTagFixtureFactory.save((entity, builder) -> {
-                builder.set("albumId", albumId);
-                builder.set("name", PictureTagName.of("park2 bell park"));
-                builder.set("deletedAt", LocalDateTime.now());
-            });
-
-            // when
-            var results = pictureTagRepositoryImpl.search(albumId, keyword);
-
-            // then
-            assertThat(results).hasSize(1);
-            assertThat(results.get(0)).isEqualTo(expectedTag);
-        }
-
-        @Test
-        @DisplayName("앨범내에 존재하는 태그만 조회한다")
-        void searchInAlbum() {
-            // given
-            String keyword = "bell";
-            Long albumId = 1L;
-
-            PictureTag expectedTag = pictureTagFixtureFactory.save((entity, builder) -> {
-                builder.set("albumId", albumId);
-                builder.set("name", PictureTagName.of("park bell park"));
-                builder.setNull("deletedAt");
-            });
-
-            pictureTagFixtureFactory.save((entity, builder) -> {
-                builder.set("albumId", albumId + 1);
-                builder.set("name", PictureTagName.of("park bell park"));
-                builder.setNull("deletedAt");
-            });
-
-            // when
-            var results = pictureTagRepositoryImpl.search(albumId, keyword);
-
-            // then
-            assertThat(results).hasSize(1);
-            assertThat(results.get(0)).isEqualTo(expectedTag);
-        }
+      // then
+      assertThat(results).hasSize(1);
+      assertThat(results.get(0)).isEqualTo(expectedTag);
     }
+
+    @Test
+    @DisplayName("삭제된 태그는 조회하지 않는다")
+    void notSearchDeletedTag() {
+      // given
+      String keyword = "bell";
+      Long albumId = 1L;
+
+      PictureTag expectedTag =
+          pictureTagFixtureFactory.save(
+              (entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+              });
+
+      pictureTagFixtureFactory.save(
+          (entity, builder) -> {
+            builder.set("albumId", albumId);
+            builder.set("name", PictureTagName.of("park2 bell park"));
+            builder.set("deletedAt", LocalDateTime.now());
+          });
+
+      // when
+      var results = pictureTagRepositoryImpl.search(albumId, keyword);
+
+      // then
+      assertThat(results).hasSize(1);
+      assertThat(results.get(0)).isEqualTo(expectedTag);
+    }
+
+    @Test
+    @DisplayName("앨범내에 존재하는 태그만 조회한다")
+    void searchInAlbum() {
+      // given
+      String keyword = "bell";
+      Long albumId = 1L;
+
+      PictureTag expectedTag =
+          pictureTagFixtureFactory.save(
+              (entity, builder) -> {
+                builder.set("albumId", albumId);
+                builder.set("name", PictureTagName.of("park bell park"));
+                builder.setNull("deletedAt");
+              });
+
+      pictureTagFixtureFactory.save(
+          (entity, builder) -> {
+            builder.set("albumId", albumId + 1);
+            builder.set("name", PictureTagName.of("park bell park"));
+            builder.setNull("deletedAt");
+          });
+
+      // when
+      var results = pictureTagRepositoryImpl.search(albumId, keyword);
+
+      // then
+      assertThat(results).hasSize(1);
+      assertThat(results.get(0)).isEqualTo(expectedTag);
+    }
+  }
 }
